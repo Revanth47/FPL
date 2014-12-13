@@ -5,7 +5,7 @@ var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
 /* GET home page. */
 router.get('/', function(req, res) {
 //  var ballResult  = gameEngine(req.query);
-    generateRandomness();
+//    generateRandomness();
  res.render('index', { title: 'Hello World!',name:'Karthik' });
 });
 function generateRandomness(){
@@ -63,12 +63,14 @@ function generateRandomness(){
   console.log(mean/10000);
 }
 function gameEngine(statusObject){
+    var batsman = statusObject.batsman;
+    var bowler = statusObject.bowler;
     // range of 0 - 100
-    var batSkill = statusObject.batSkill;
-    var ballSkill = statusObject.ballSkill;
+    var batSkill = batsman.battingSkill;
+    var ballSkill = bowler.bowlingSkill;
     // alters skill from -x% to +x%
-    var batConfidence = statusObject.batConfidence;
-    var ballConfidence = statusObject.ballConfidence;
+    var batConfidence = batsman.confidence;
+    var ballConfidence = bowler.confidence;
     //
     //  defensive:
     //          low wicket chance, but low runs
