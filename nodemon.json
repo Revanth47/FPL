@@ -1,0 +1,4 @@
+{
+    "watch":["bin/www","routes/*","public/*","app.js","views/*"],
+    "verbose":true
+}
