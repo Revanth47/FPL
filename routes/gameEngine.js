@@ -91,6 +91,7 @@ function gameEngine(statusObject){
     //random event
     var randomEvent = Math.random();
     //set if erf should be taken in negative, so we multiply xErf by -1,odd function
+    // go to wiki and learn about gaussian probability distribution and inverse transform sampling.
     var negativeFlag = false;
     var valueOfErf = 2*randomEvent - 1;
     if(valueOfErf<0){
@@ -107,19 +108,39 @@ function gameEngine(statusObject){
     if(negativeFlag)
         xErf = xErf*-1;
     var randomVariable = (xErf*Math.sqrt(2*variance))+mean;
-    if(randomVariable<0.14)
-        return -1;
-    else if(randomVariable<0.50)
-        return 0;
-    else if(randomVariable<0.60)
-        return 1;
-    else if(randomVariable<0.65)
-        return 2;
-    else if(randomVariable<0.75)
-        return 3;
-    else if(randomVariable<0.85)
-        return 4;
-    else
-        return 6;
+    //resultant 
+    var object={};
+    // u know what this is
+    var confidenceFactor;
+    if(randomVariable<0.14){
+        object.result = -1;
+        confidenceFactor = -3;
+    }
+    else if(randomVariable<0.50){
+        object.result = 0;
+        confidenceFactor = -2;
+    }
+    else if(randomVariable<0.60){
+        object.result = 1;
+        confidenceFactor = -1;
+    }
+    else if(randomVariable<0.65){
+        object.result = 2;
+        confidenceFactor = 0;
+    }
+    else if(randomVariable<0.75){
+        object.result = 3;
+        confidenceFactor = 1;
+    }
+    else if(randomVariable<0.85){
+        object.result = 4;
+        confidenceFactor = 2;
+    }
+    else{
+        object.result = 6;
+        confidenceFactor = 3;
+    }
+    object.batConfidence = batConfidence + confidenceFactor;
+    object.ballConfidence = ballConfidence - confidenceFactor;
 }
 module.exports = router;
