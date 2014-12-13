@@ -5,7 +5,6 @@ var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
 /* GET home page. */
 router.get('/', function(req, res) {
 //  var ballResult  = gameEngine(req.query);
-//  console.log(req.query);
     generateRandomness();
  res.render('index', { title: 'Hello World!',name:'Karthik' });
 });
@@ -17,6 +16,9 @@ function generateRandomness(){
   var mean=0;
   var object= {};
   var random;
+//  var meanArr = Array.apply(null, new Array(7)).map(Number.prototype.valueOf,0);
+  var result = {};
+  var arr = Array.apply(null, new Array(7)).map(Number.prototype.valueOf,0);
   for(var j =0;j<10000;j++){
       runs = 0;
       wickets =0;
@@ -39,11 +41,14 @@ function generateRandomness(){
             object.ballStyle = "Attack";
         else
             object.ballStyle = "Defend";
-        random = gameEngine(object);
-        if(random==-1)
+        result = gameEngine(object);
+        if(result.result==-1)
             wickets++;
-        else
-            runs = runs + random;
+        else{
+            arr[result.result]++;
+            arr[5]++;
+            runs = runs + result.result;
+        }
         if(wickets==10)
             break;
     }
@@ -52,6 +57,7 @@ function generateRandomness(){
         if(wickets!=0)
             mean = mean + (runs/wickets);
   }
+  console.log(arr);
   console.log(meanR/10000);
   console.log(meanW/10000);
   console.log(mean/10000);
@@ -88,6 +94,8 @@ function gameEngine(statusObject){
         variance = variance - varianceFactor*finalBallPoints/2;
     else
         variance = variance + varianceFactor*finalBallPoints/2;
+
+
     //random event
     var randomEvent = Math.random();
     //set if erf should be taken in negative, so we multiply xErf by -1,odd function
@@ -108,6 +116,9 @@ function gameEngine(statusObject){
     if(negativeFlag)
         xErf = xErf*-1;
     var randomVariable = (xErf*Math.sqrt(2*variance))+mean;
+
+
+
     //resultant 
     var object={};
     // u know what this is
@@ -140,7 +151,19 @@ function gameEngine(statusObject){
         object.result = 6;
         confidenceFactor = 3;
     }
+
     object.batConfidence = batConfidence + confidenceFactor;
+    if(object.batConfidence>25)
+        object.batConfidence = 25;
+    if(object.batConfidence<-25)
+        object.batConfidence = -25;
+
     object.ballConfidence = ballConfidence - confidenceFactor;
+    if(object.ballConfidence>25)
+        object.ballConfidence = 25;
+    if(object.ballConfidence<-25)
+        object.ballConfidence = -25;
+
+   return object;
 }
 module.exports = router;
