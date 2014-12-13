@@ -20,5 +20,16 @@ var teamSchema = new Schema({
     cash: Number,
 });
 
+var matchSchema = new Schema({
+    team1: {
+        type : Schema.Types.ObjectId,
+        ref : 'Team'
+        },
+    team2: {
+        type : Schema.Types.ObjectId,
+        ref : 'Team'
+        },
+
+});
 module.exports.Player = mongoose.model('Player',playerSchema);
 module.exports.Team = mongoose.model('Team',teamSchema);

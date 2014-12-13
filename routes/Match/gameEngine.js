@@ -2,66 +2,11 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
-/* GET home page. */
-router.get('/', function(req, res) {
-//  var ballResult  = gameEngine(req.query);
+
+router.get('/:matchId', function(req, res) {
 //    generateRandomness();
- res.render('index', { title: 'Hello World!',name:'Karthik' });
+      res.send();
 });
-function generateRandomness(){
-  var runs =0;
-  var wickets =0;
-  var meanR=0;
-  var meanW=0;
-  var mean=0;
-  var object= {};
-  var random;
-//  var meanArr = Array.apply(null, new Array(7)).map(Number.prototype.valueOf,0);
-  var result = {};
-  var arr = Array.apply(null, new Array(7)).map(Number.prototype.valueOf,0);
-  for(var j =0;j<10000;j++){
-      runs = 0;
-      wickets =0;
-  for(var i=0;i<30;i++){
-        random = Math.random()*100;
-        object.batSkill = random;
-        random = Math.random()*100;
-        object.ballSkill = random;
-        random = (Math.random()*2-1)*25;
-        object.batConfidence = random;
-        random = (Math.random()*2-1)*25;
-        object.ballConfidence = random;
-        random = Math.random();
-        if(random>0.5)
-            object.batStyle = "Attack";
-        else
-            object.batStyle = "Defend";
-        random = Math.random();
-        if(random>0.5)
-            object.ballStyle = "Attack";
-        else
-            object.ballStyle = "Defend";
-        result = gameEngine(object);
-        if(result.result==-1)
-            wickets++;
-        else{
-            arr[result.result]++;
-            arr[5]++;
-            runs = runs + result.result;
-        }
-        if(wickets==10)
-            break;
-    }
-        meanW = meanW + (wickets);
-        meanR = meanR + runs;
-        if(wickets!=0)
-            mean = mean + (runs/wickets);
-  }
-  console.log(arr);
-  console.log(meanR/10000);
-  console.log(meanW/10000);
-  console.log(mean/10000);
-}
 function gameEngine(statusObject){
     var batsman = statusObject.batsman;
     var bowler = statusObject.bowler;
@@ -167,5 +112,59 @@ function gameEngine(statusObject){
         object.ballConfidence = -25;
 
    return object;
+}
+function generateRandomness(){
+  var runs =0;
+  var wickets =0;
+  var meanR=0;
+  var meanW=0;
+  var mean=0;
+  var object= {};
+  var random;
+//  var meanArr = Array.apply(null, new Array(7)).map(Number.prototype.valueOf,0);
+  var result = {};
+  var arr = Array.apply(null, new Array(7)).map(Number.prototype.valueOf,0);
+  for(var j =0;j<10000;j++){
+      runs = 0;
+      wickets =0;
+  for(var i=0;i<30;i++){
+        random = Math.random()*100;
+        object.batSkill = random;
+        random = Math.random()*100;
+        object.ballSkill = random;
+        random = (Math.random()*2-1)*25;
+        object.batConfidence = random;
+        random = (Math.random()*2-1)*25;
+        object.ballConfidence = random;
+        random = Math.random();
+        if(random>0.5)
+            object.batStyle = "Attack";
+        else
+            object.batStyle = "Defend";
+        random = Math.random();
+        if(random>0.5)
+            object.ballStyle = "Attack";
+        else
+            object.ballStyle = "Defend";
+        result = gameEngine(object);
+        if(result.result==-1)
+            wickets++;
+        else{
+            arr[result.result]++;
+            arr[5]++;
+            runs = runs + result.result;
+        }
+        if(wickets==10)
+            break;
+    }
+        meanW = meanW + (wickets);
+        meanR = meanR + runs;
+        if(wickets!=0)
+            mean = mean + (runs/wickets);
+  }
+  console.log(arr);
+  console.log(meanR/10000);
+  console.log(meanW/10000);
+  console.log(mean/10000);
 }
 module.exports = router;
