@@ -10,6 +10,7 @@ var playerSchema = new Schema({
     team : {
         type : Schema.Types.ObjectId,
         ref : 'Team'
+
     },
     imgSource : String,
     misc : String
@@ -17,19 +18,57 @@ var playerSchema = new Schema({
 
 var teamSchema = new Schema({
     name: String,
-    cash: Number,
+    cash: {
+        type:Number,
+        default:10000
+    }
 });
+
+
 
 var matchSchema = new Schema({
-    team1: {
-        type : Schema.Types.ObjectId,
-        ref : 'Team'
+    teams:[{
+        team: {
+            type : Schema.Types.ObjectId,
+            ref : 'Team'
+            },
+        playersStats: [{
+            player:{
+                type: Schema.Types.ObjectId,
+                ref : 'Player'
+                },
+            runsScoredInMatch:{
+                type:Number,
+                default:0
+            },
+            battingStatus:{
+                type:String,
+                enum:["out","inStrike","notOut","notPlayed" ],
+                default:"notPlayed"
+            }
+            ballsBowledInMatch:{
+                type:Number,
+                default:0
+            },
+            bowlingStatus:Boolean
+        }],
+        ballsBowled:{
+            type:Number,
+            default:0
         },
-    team2: {
-        type : Schema.Types.ObjectId,
-        ref : 'Team'
-        },
-
+        runsScored:{
+            type:Number,
+            default:0
+        }
+    }],
+    innings: Number,
+    winner: {
+        type: Schema.Types.ObjectId,
+        ref:'Team'
+    }
 });
+
+
 module.exports.Player = mongoose.model('Player',playerSchema);
 module.exports.Team = mongoose.model('Team',teamSchema);
+module.exports.Match = mongoose.model('Match',matchSchema);
