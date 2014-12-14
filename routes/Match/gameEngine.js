@@ -5,7 +5,7 @@ var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
 
 router.get('/:matchId', function(req, res) {
 //    generateRandomness();
-      res.send();
+      res.send("yo");
 });
 function gameEngine(statusObject){
     var batsman = statusObject.batsman;
