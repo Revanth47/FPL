@@ -5,11 +5,16 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var multer = require('multer'); 
+var session = require('cookie-session');
 model = require('models');
 
 var gameEngine = require('./routes/Match/gameEngine');
 var selectPlayers = require('./routes/Match/selectPlayers');
 var app = express();
+app.use(session({
+    name:'PPL',
+    secret:'PPL'
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/Match/selectPlayers',selectPlayers);
-app.use('/Match',gameEngine);
+app.use('/Match/',gameEngine);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Select Players</title>
+  </head>
+  <body>
+   <center><h2 id="matchId">{{matchId}}</h2></center>
+  <div id="unSelectedList" style="position:absolute;left:0px">
+   {{#list}}
+   <div id = "{{_id}}">
+   {{name}} {{battingSkill}} {{bowlingSkill}} {{confidence}}
+   </div>
+   {{/list}}
+    </div>
+    <div id="selectedList" style="position:absolute;right:0px">
+    </div>
+    <center><button type="button" onclick="submitList()">Submit</button>
+</body>
+<script>
+var selectedCount = 0;
+window.onload = function(){
+    var child = document.getElementById("unSelectedList").firstChild;
+    child.onclick = getSelected;
+    while(child = child.nextSibling)
+        child.onclick = getSelected;
+}
+function getSelected(){
+    selectedCount++;
+    var player = this;
+    document.getElementById("unSelectedList").removeChild(player);
+    player.onclick = getUnSelected;
+    document.getElementById("selectedList").appendChild(player);
+}
+function getUnSelected(){
+    selectedCount--;
+    var player = this;
+    document.getElementById("selectedList").removeChild(player);
+    player.onclick = getSelected;
+    document.getElementById("unSelectedList").appendChild(player);
+}
+function submitList(){
+    if(selectedCount!=11){
+        alert("You must choose 11 players,You have chosen "+selectedCount+" players");
+        return;
+    }
+    var selectedList = document.getElementById("selectedList");
+    var selectedPlayers=Array();
+    var child = selectedList.firstChild;
+    var i=0;
+    while(child = child.nextSibling){
+         selectedPlayers[i] = {};
+         selectedPlayers[i]._id = child.id;
+         i++;
+    }
+    var postObject = {
+        players : "null"
+        }
+    postObject["players"] = JSON.stringify(selectedPlayers);
+    post("http://localhost:9000/Match/",postObject); 
+}
+function post(path, params) {
+
+    var form = document.createElement("form");
+    form.setAttribute("method", "POST");
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+
+        if(params.hasOwnProperty(key)) {
+
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+        }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
+</html>
