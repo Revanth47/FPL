@@ -3,8 +3,11 @@
   <head>
     <title>PPL Match</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io('/gameEngine');
+    </script>
   </head>
   <body>
-    <center><h1>{{ team1 }} vs {{ team2 }}</h1></center>
   </body>
 </html>

@@ -1,9 +1,53 @@
 #!/usr/bin/env node
 var debug = require('debug')('firstApp');
 var app = require('../app');
+var session = require('cookie-session');
+var parseCookies = require('cookie-parser')();
+var express = require('express');
+var connect = require('connect');
+//var store = new connect.cookie-parser.session.MemoryStore();
 
 app.set('port', process.env.PORT || 9000);
 console.log("running");
 var server = app.listen(app.get('port'), function() {
-  debug('Express server listening on port ' + server.address().port);
+  console.log('Express server listening on port ' + server.address().port);
 });
+var io = require('socket.io').listen(server);
+var users= Array();
+var nsp = io.of('/gameEngine');
+next = function(data){
+    console.log(data);
+}
+/*nsp.use(function(socket,next){
+    var req = socket.handshake;
+    var res = {};
+//    console.log(req);
+//    parseCookies(req,res,function(err){
+//        if(err)
+//            return next(err);
+//        if(req==temp)
+//            console.log("poya");
+        session({keys:['PPL']})(req,res,function(){});
+        console.log(req.session.sid);
+//    });
+});*/
+nsp.on('connection',function(socket){
+//    var req = socket.request;
+//    var temp = socket.handshake;
+      var cookieS = socket.request.headers.cookie;
+      var req = {
+          headers : {
+              cookie : cookieS
+            }
+        };
+        var temp = req;
+//    if(req==temp)
+//        console.log("aiyo");
+//    console.log(req);
+    console.log("someone connected");
+    users.push(socket);
+    session({keys:['PPL'],name:'PPL'})(req,{},function(){});
+    console.log(req.session.team);
+//    console.log(JSON.stringify(socket.handshake.session));
+});
+

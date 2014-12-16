@@ -2,33 +2,16 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
+var io = require('socket.io')();
 var session = require('cookie-session');
 
-
-router.post('/', function(req, res) {
-      var playersArray = JSON.parse(req.body.players);
-      var sess  = req.session;
-      var updateQuery={};
-      if(sess.match.team1.team==sess.team._id){
-               updateQuery= {$set:{"team1.playersStats" : playersArray}};
-        }else{
-               updateQuery= {$set:{"team2.playersStats" : playersArray}};
-        }
-      models.Match.findOneAndUpdate({
-            _id : sess.match._id
-        },updateQuery,{
-            new:true
-        },function(err,data){
-                if(err)
-                    console.log(err);
-                else{
-                   if(data.team2.playerStats==null)
-                       res.send(data);
-                    }
-        });
-//      console.log(sess.match);
-//      console.log(sess.team);
+var nameSpace = io.of('/gameEngine');
+var users = Array();
+nameSpace.on('connection',function(socket){
+    users.push(socket);
+    console.log(socket);
 });
+
 function gameEngine(statusObject){
     var batsman = statusObject.batsman;
     var bowler = statusObject.bowler;

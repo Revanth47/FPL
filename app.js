@@ -8,12 +8,12 @@ var multer = require('multer');
 var session = require('cookie-session');
 model = require('models');
 
-var gameEngine = require('./routes/Match/gameEngine');
+var match = require('./routes/Match/match');
 var selectPlayers = require('./routes/Match/selectPlayers');
 var app = express();
 app.use(session({
     name:'PPL',
-    secret:'PPL'
+    keys:['PPL'],
 }));
 
 // view engine setup
@@ -31,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/Match/selectPlayers',selectPlayers);
-app.use('/Match/',gameEngine);
+app.use('/Match/',match);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
