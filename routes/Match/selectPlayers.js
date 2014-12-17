@@ -2,10 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 fs = require('fs');
-var session = require('cookie-session')({
-    keys:['PPL'],
-    name:'PPL'
-});
+var session = require('cookie-session');
 models = require('models');
 mongoose.connect('mongodb://localhost:27017/PPL');
 db = mongoose.connection;
@@ -41,13 +38,15 @@ router.get('/:team',function(req,res){
                 if(err)
                     res.send(err);
                 else{
-                    sess.team = teamInSession;
-                    sess.match = match;
-                    console.log("Yo");
+                    req.session.team = teamInSession;
+                    //have to do this, because data storage on cookie is limited and will result in destruction of the session if limit is exceeded
+                    match.team1.playersStats = null;
+                    match.team2.playersStats = null;
+                    req.session.match = match;
                     models.Player.find({
                         team:teamInSession
                     },function(err,players){
-                        console.log(req.session.match);
+                      //  console.log(req.session.match);
                         if(err)
                             res.send(err);
                         else

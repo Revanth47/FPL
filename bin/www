@@ -3,7 +3,7 @@ var debug = require('debug')('firstApp');
 var app = require('../app');
 var mongoose = require('mongoose');
 var models = require('models');
-
+var session = require('cookie-session');
 app.set('port', process.env.PORT || 9000);
 console.log("running");
 
@@ -13,7 +13,7 @@ var server = app.listen(app.get('port'), function() {
 });
 
 var teamSockets = {};
-/*var io = require('socket.io').listen(server);
+var io = require('socket.io').listen(server);
 var nsp = io.of('/gameEngine');
 nsp.on('connection',function(socket){
       var cookieS = socket.request.headers.cookie;
@@ -23,9 +23,10 @@ nsp.on('connection',function(socket){
             }
         };
         var temp = req;
-    session({keys:['PPL'],name:'PPL',secret:'PPL'})(req,{},function(){});
+    session({secret:'PragyanPremierLeague',name:'PragyanPremierLeague'})(req,{},function(){});
     var matchId = req.session.match._id;
     socket.join(matchId);
+    console.log(JSON.stringify(req.session));
    //associate team with socket altogether with the match
    if(!teamSockets[matchId])
         teamSockets[matchId] = {};
@@ -43,7 +44,7 @@ nsp.on('connection',function(socket){
         initInnings(1,matchId);
     }
 });
-*/
+
 function initInnings(inningsNumber,matchId){
         models.Match.findOneAndUpdate({_id : matchId},{$set : {innings : inningsNumber}},{new:true})
         .populate('team1.team team2.team team1.playerStats._id team2.playerStats._id')

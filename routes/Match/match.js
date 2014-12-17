@@ -6,9 +6,11 @@ var session = require('cookie-session');
 
 router.post('/', function(req, res) {
       var playersArray = JSON.parse(req.body.players);
-      console.log(req);
+      //console.log(req);
       var sess  = req.session;
-      console.log(JSON.stringify(sess));
+//      console.log(JSON.stringify(sess));
+//      sess.yolo = "yolo";
+//      sess.humm = "humm";
       var updateQuery={};
       if(sess.match.team1.team==sess.team._id){
                updateQuery= {$set:{"team1.playersStats" : playersArray}};
@@ -24,8 +26,6 @@ router.post('/', function(req, res) {
                     console.log(err);
                 else{
                     res.send(data);
-                  // if(data.team2.playerStats==null||data.team1.playerStats==null)//check if both teams have selected their players
-                    //   res.send(data);
                     }
         });
 //      console.log(sess.match);
@@ -33,7 +33,7 @@ router.post('/', function(req, res) {
 });
 
 router.get('/',function(req,res){
-    var sess = req.session.team._id;
+//    var sess = req.session.team._id;
     res.render('match');
 });
 module.exports = router;

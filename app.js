@@ -12,7 +12,8 @@ var match = require('./routes/Match/match');
 var selectPlayers = require('./routes/Match/selectPlayers');
 var app = express();
 app.use(session({
-    secret:'PPL'
+    secret:'PragyanPremierLeague',
+    name:'PragyanPremierLeague'
 }));
 
 // view engine setup
