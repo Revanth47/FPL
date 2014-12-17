@@ -6,8 +6,35 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socket = io('/gameEngine');
+        var batting;//set to true if team is batting else set it to false
+        var batsmen = Array(2);
+        var bowler;
+        var playStyle; //Attack or Defend
+        var match= {};
+        socket.on('initialize',function(msg){
+/*            batting = msg.batting;
+            match = msg.match;
+            var heading = document.getElementById("batting").getElementByTagName("h3");
+            var battingTeam,bowlingTeam;
+            if(match.innings == 1){
+                battingTeam = "team1";
+                bowlingTeam = "team2";
+            }else{
+                battingTeam = "team2";
+                bowlingTeam = "team1";
+            }
+            heading[0].innerHTML = match[battingTeam].
+            heading[0].*/
+            document.write(msg.match);
+        });
     </script>
   </head>
   <body>
+  <div id="batting" style="position:absolute;left:0px">
+    <center><h3></h3></center>
+  </div>
+  <div id="bowling" style="position:absolute;right:0px">
+    <center><h3></h3></center>
+  </div>
   </body>
 </html>

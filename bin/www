@@ -1,39 +1,21 @@
 #!/usr/bin/env node
 var debug = require('debug')('firstApp');
 var app = require('../app');
-var session = require('cookie-session');
-var parseCookies = require('cookie-parser')();
-var express = require('express');
-var connect = require('connect');
-//var store = new connect.cookie-parser.session.MemoryStore();
+var mongoose = require('mongoose');
+var models = require('models');
 
 app.set('port', process.env.PORT || 9000);
 console.log("running");
+
+
 var server = app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + server.address().port);
 });
-var io = require('socket.io').listen(server);
-var users= Array();
+
+var teamSockets = {};
+/*var io = require('socket.io').listen(server);
 var nsp = io.of('/gameEngine');
-next = function(data){
-    console.log(data);
-}
-/*nsp.use(function(socket,next){
-    var req = socket.handshake;
-    var res = {};
-//    console.log(req);
-//    parseCookies(req,res,function(err){
-//        if(err)
-//            return next(err);
-//        if(req==temp)
-//            console.log("poya");
-        session({keys:['PPL']})(req,res,function(){});
-        console.log(req.session.sid);
-//    });
-});*/
 nsp.on('connection',function(socket){
-//    var req = socket.request;
-//    var temp = socket.handshake;
       var cookieS = socket.request.headers.cookie;
       var req = {
           headers : {
@@ -41,13 +23,51 @@ nsp.on('connection',function(socket){
             }
         };
         var temp = req;
-//    if(req==temp)
-//        console.log("aiyo");
-//    console.log(req);
-    console.log("someone connected");
-    users.push(socket);
-    session({keys:['PPL'],name:'PPL'})(req,{},function(){});
-    console.log(req.session.team);
-//    console.log(JSON.stringify(socket.handshake.session));
-});
+    session({keys:['PPL'],name:'PPL',secret:'PPL'})(req,{},function(){});
+    var matchId = req.session.match._id;
+    socket.join(matchId);
+   //associate team with socket altogether with the match
+   if(!teamSockets[matchId])
+        teamSockets[matchId] = {};
+    if(req.session.match.team1.team == req.session.team._id)
+        teamSockets[matchId].team1 = socket;
+    else
+        teamSockets[matchId].team2 = socket;
+   
+   
+   var players = findClientsSocket(matchId,'/gameEngine');
 
+    //i have no fucking idea why it acts like that... but here 0==1client , 1==2client log players.length and see for yourself :P
+    if(players.length==1){
+        //setup 1st innings of match
+        initInnings(1,matchId);
+    }
+});
+*/
+function initInnings(inningsNumber,matchId){
+        models.Match.findOneAndUpdate({_id : matchId},{$set : {innings : inningsNumber}},{new:true})
+        .populate('team1.team team2.team team1.playerStats._id team2.playerStats._id')
+        .exec(function(err,match){
+            if(err){
+                console.log(err);
+                return;
+            }
+            var msg  = {
+                match: JSON.stringify(match)
+            };
+            msg.batting = (inningsNumber==1);
+            teamSockets[matchId].team1.emit('initialize',msg);
+            msg.batting = (inningsNumber==2);
+            teamSockets[matchId].team2.emit('initialize',msg);
+        });
+}
+function findClientsSocket(roomId, namespace) {
+    var res = [], ns = io.of(namespace ||"/");    // the default namespace is "/"
+        for (var id in ns.connected) {
+                var index = ns.connected[id].rooms.indexOf(roomId) ;
+                if(index !== -1) {
+                    res.push(ns.connected[id]);
+                }
+        }
+    return res;
+}

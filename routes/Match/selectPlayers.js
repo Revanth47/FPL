@@ -2,7 +2,10 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 fs = require('fs');
-var session = require('cookie-session');
+var session = require('cookie-session')({
+    keys:['PPL'],
+    name:'PPL'
+});
 models = require('models');
 mongoose.connect('mongodb://localhost:27017/PPL');
 db = mongoose.connection;
@@ -40,9 +43,11 @@ router.get('/:team',function(req,res){
                 else{
                     sess.team = teamInSession;
                     sess.match = match;
+                    console.log("Yo");
                     models.Player.find({
                         team:teamInSession
                     },function(err,players){
+                        console.log(req.session.match);
                         if(err)
                             res.send(err);
                         else

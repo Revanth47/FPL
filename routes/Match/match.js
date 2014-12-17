@@ -4,10 +4,11 @@ var fs = require('fs');
 var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
 var session = require('cookie-session');
 
-
 router.post('/', function(req, res) {
       var playersArray = JSON.parse(req.body.players);
+      console.log(req);
       var sess  = req.session;
+      console.log(JSON.stringify(sess));
       var updateQuery={};
       if(sess.match.team1.team==sess.team._id){
                updateQuery= {$set:{"team1.playersStats" : playersArray}};

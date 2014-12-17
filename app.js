@@ -12,8 +12,7 @@ var match = require('./routes/Match/match');
 var selectPlayers = require('./routes/Match/selectPlayers');
 var app = express();
 app.use(session({
-    name:'PPL',
-    keys:['PPL'],
+    secret:'PPL'
 }));
 
 // view engine setup
