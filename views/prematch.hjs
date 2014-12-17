@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PPL Match</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io('/startGame');
+        socket.on('initialize',function(msg){
+            document.write("hii");
+            window.location.replace("/Match/");
+        });
+    </script>
+    </head>
+    <body>
+    Please wait for the other player to select the team
+    </body>
+</html>

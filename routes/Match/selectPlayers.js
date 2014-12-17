@@ -16,6 +16,7 @@ db.once('open', function () {
 });
 router.get('/:team',function(req,res){
     var sess = req.session;
+//    createMatch();
     // get this from session instead of params and db
         models.Team.findOne({
             name:req.params.team
@@ -62,8 +63,8 @@ router.get('/:team',function(req,res){
 
 
 module.exports = router;
-/* admin for creating match
-   
+// admin for creating match
+function createMatch(){
    models.Team.findOne({
         name:"csk"
     },function(err,team1){
@@ -79,11 +80,8 @@ module.exports = router;
                 }
             });
             match.save(function(err,data){
-                if(err)
-                    res.send(err);
-                else
-                    res.send(data);
             });
         });
     });
- */
+}
+ 

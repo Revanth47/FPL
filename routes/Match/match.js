@@ -4,13 +4,12 @@ var fs = require('fs');
 var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
 var session = require('cookie-session');
 
+// handles prematch
 router.post('/', function(req, res) {
       var playersArray = JSON.parse(req.body.players);
       //console.log(req);
       var sess  = req.session;
-//      console.log(JSON.stringify(sess));
-//      sess.yolo = "yolo";
-//      sess.humm = "humm";
+
       var updateQuery={};
       if(sess.match.team1.team==sess.team._id){
                updateQuery= {$set:{"team1.playersStats" : playersArray}};
@@ -25,11 +24,9 @@ router.post('/', function(req, res) {
                 if(err)
                     console.log(err);
                 else{
-                    res.send(data);
+                    res.render('prematch');
                     }
         });
-//      console.log(sess.match);
-//      console.log(sess.team);
 });
 
 router.get('/',function(req,res){

@@ -14,61 +14,107 @@ var server = app.listen(app.get('port'), function() {
 
 var teamSockets = {};
 var io = require('socket.io').listen(server);
+
+
 var nsp = io.of('/gameEngine');
-nsp.on('connection',function(socket){
-      var cookieS = socket.request.headers.cookie;
-      var req = {
-          headers : {
-              cookie : cookieS
-            }
-        };
-        var temp = req;
-    session({secret:'PragyanPremierLeague',name:'PragyanPremierLeague'})(req,{},function(){});
-    var matchId = req.session.match._id;
-    socket.join(matchId);
-    console.log(JSON.stringify(req.session));
-   //associate team with socket altogether with the match
+
+// pre match namespace so that initialize isnt called twice if page is refreshed or navigated away from
+var nsp2 = io.of('/startGame');
+
+nsp2.on('connection',function(socket){
+       var req = getCookie(socket);
+       var matchId = req.session.match._id;
+
+//associate team with socket altogether with the match
    if(!teamSockets[matchId])
         teamSockets[matchId] = {};
     if(req.session.match.team1.team == req.session.team._id)
         teamSockets[matchId].team1 = socket;
     else
         teamSockets[matchId].team2 = socket;
-   
-   
-   var players = findClientsSocket(matchId,'/gameEngine');
 
-    //i have no fucking idea why it acts like that... but here 0==1client , 1==2client log players.length and see for yourself :P
-    if(players.length==1){
+    var players = findClientsSocket(null,'/startGame');
+   console.log(players.length);
+    if(players.length==2){
         //setup 1st innings of match
         initInnings(1,matchId);
     }
+   
 });
 
+nsp.on('connection',function(socket){
+    var req = getCookie(socket);
+    var matchId = req.session.match._id;
+
+ /* FOR DEVELOPMENT PURPOSES */
+    if(!teamSockets[matchId])
+        teamSockets[matchId] = {};
+    if(req.session.match.team1.team == req.session.team._id)
+        teamSockets[matchId].team1 = socket;
+    else
+        teamSockets[matchId].team2 = socket;
+ /* FOR DEVELOPMENT PURPOSES */
+
+   socket.join(matchId);
+    models.Match.findOne({_id : matchId})
+    .populate('team1.team team2.team team1.playersStats.player team2.playersStats.player')
+    .exec(function(err,match){
+        if(err){
+            console.log(err);
+            return;
+        }
+        var msg  = {
+            match: match
+            };
+            msg.batting = (match.innings==1);
+            if(teamSockets[matchId].team1)
+                teamSockets[matchId].team1.emit('initialize',msg);
+            msg.batting = (match.innings==2);
+            if(teamSockets[matchId].team2)
+                teamSockets[matchId].team2.emit('initialize',msg);
+                  
+    });
+});
+
+//to parse the cookie and get the session
+function getCookie(socket){
+  var cookieS = socket.request.headers.cookie;
+      var req = {
+          headers : {
+              cookie : cookieS
+            }
+        };
+    session({secret:'PragyanPremierLeague',name:'PragyanPremierLeague'})(req,{},function(){});
+    return req;
+}
+
+// to start the first innings and send message to client to redirect them to the match view from prematch view
 function initInnings(inningsNumber,matchId){
-        models.Match.findOneAndUpdate({_id : matchId},{$set : {innings : inningsNumber}},{new:true})
-        .populate('team1.team team2.team team1.playerStats._id team2.playerStats._id')
-        .exec(function(err,match){
+        models.Match.findOneAndUpdate({_id : matchId},{$set : {innings : inningsNumber}},{new:true},function(err,match){
             if(err){
                 console.log(err);
                 return;
             }
-            var msg  = {
-                match: JSON.stringify(match)
-            };
-            msg.batting = (inningsNumber==1);
-            teamSockets[matchId].team1.emit('initialize',msg);
-            msg.batting = (inningsNumber==2);
-            teamSockets[matchId].team2.emit('initialize',msg);
+            teamSockets[matchId].team1.emit('initialize',"alo");
+            teamSockets[matchId].team2.emit('initialize',"alo");
         });
 }
+
 function findClientsSocket(roomId, namespace) {
+
     var res = [], ns = io.of(namespace ||"/");    // the default namespace is "/"
+    if (ns) {
         for (var id in ns.connected) {
+            if(roomId) {
                 var index = ns.connected[id].rooms.indexOf(roomId) ;
                 if(index !== -1) {
                     res.push(ns.connected[id]);
                 }
+            } else {
+                res.push(ns.connected[id]);
+            }
         }
+    }
     return res;
 }
+

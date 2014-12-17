@@ -4,6 +4,7 @@
     <title>PPL Match</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/javascripts/jquery.min.js"></script>
     <script>
         var socket = io('/gameEngine');
         var batting;//set to true if team is batting else set it to false
@@ -12,9 +13,16 @@
         var playStyle; //Attack or Defend
         var match= {};
         socket.on('initialize',function(msg){
-/*            batting = msg.batting;
+            batting = msg.batting;
             match = msg.match;
-            var heading = document.getElementById("batting").getElementByTagName("h3");
+            console.log(match);
+            batsmen[0] = "";
+            batsmen[1] = "";
+            bowler = "";
+            playStyle = null;
+            $(".players").remove();
+            var heading1 = document.getElementById("batting").getElementsByTagName("h3");
+            var heading2 = document.getElementById("bowling").getElementsByTagName("h3");
             var battingTeam,bowlingTeam;
             if(match.innings == 1){
                 battingTeam = "team1";
@@ -23,18 +31,79 @@
                 battingTeam = "team2";
                 bowlingTeam = "team1";
             }
-            heading[0].innerHTML = match[battingTeam].
-            heading[0].*/
-            document.write(msg.match);
-        });
+            heading1[0].innerHTML = match[battingTeam].team.name;
+            heading2[0].innerHTML = match[bowlingTeam].team.name;
+            for(var i=0;i<11;i++){
+                var Player = match[battingTeam].playersStats[i];
+                var className = Player.battingStatus;
+                if(className == "inStrike")
+                    batsmen[0] = Player.player.name;
+                if(className == "notOut")
+                    batsmen[1] = Player.player.name;
+
+                if(className != "notPlayed")
+                    var html = playerParser(Player,true,className,null);
+                else
+                    var html = playerParser(Player,true,className,selectBatsman);
+                $("#battingStats").append(html);
+            }
+            for(var i=0;i<11;i++){
+                var Player = match[bowlingTeam].playersStats[i];
+                var className = Player.bowlingStatus;
+                if(className == "bowling")
+                    bowler = Player.player.name;
+                if(className =="oversDone")
+                    var html = playerParser(Player,false,className,null);
+                else
+                    var html = playerParser(Player,false,className,selectBowler);
+                $("#bowlingStats").append(html);
+            }
+            //$("#instrike").text(batsmen[0]);
+            //$("#notout").text(batsmen[1]);
+            //$("#bowler").text(bowler);
+            });
+        function playerParser(Player,statBool,className,clickFunction){
+            var str = "<tr class = 'players "+className+"'>";
+            str = str + "<td align='center'>"+Player.player.name+"</td>";
+            if(statBool)
+                str = str + "<td align='center'>"+Player.player.battingSkill+"</td>";
+            else
+                str = str + "<td align='center'>"+Player.player.bowlingSkill+"</td>";
+            str = str + "<td align='center'>"+Player.player.confidence+"</td>";
+            if(statBool)
+                str = str + "<td align='center'>"+Player.runsScoredInMatch+"</td>";
+            else
+                str = str + "<td align='center'>"+Player.ballsBowledInMatch+"</td>";
+            str = str + "</tr>";
+            var html = $.parseHTML(str);
+            $(html).click(clickFunction);
+            return html;
+        }
+        var selectBatsman = function(){
+            if(batsmen[0]!=""&&batsmen[1]!="")
+                return;
+        }
+        var selectBowler = function(){
+            if(bowler!="")
+                return;
+        }
     </script>
   </head>
   <body>
-  <div id="batting" style="position:absolute;left:0px">
+  <div id="batting" style="float:left">
     <center><h3></h3></center>
+    <table id ="battingStats" >
+    <tr><th>Name</th><th>Batting Skill</th><th>Confidence</th><th>Score</th></tr>
+    </table>
   </div>
-  <div id="bowling" style="position:absolute;right:0px">
+  <div id="bowling" style="float:right">
     <center><h3></h3></center>
+    <table id ="bowlingStats">
+    <tr><th>Name</th><th>Bowling Skill</th><th>Confidence</th><th>Balls bowled</th></tr>
+    </table>
   </div>
-  </body>
+  <div id="bowler" class="inAction" style="float:right">TEMPORARY</div>
+  <div id="instrike" class="inAction" style="color:green">TEMPORARY</div><br>
+  <div id="notout" class="inAction" style="color:yellow">TEMPORARY</div></body>
+
 </html>

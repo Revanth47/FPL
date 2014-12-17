@@ -1,8 +1,12 @@
-body {
-  padding: 50px;
-  font: 25px "Lucida Grande", Helvetica, Arial, sans-serif;
+th {
+    padding : 10px;
 }
-
+td {
+    font-size : 120%;
+}
 a {
   color: #00B7FF;
+}
+.inAction{
+    font-size:300%;
 }
