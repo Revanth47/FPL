@@ -33,6 +33,7 @@
             }
             heading1[0].innerHTML = match[battingTeam].team.name;
             heading2[0].innerHTML = match[bowlingTeam].team.name;
+            var wickets =0;
             for(var i=0;i<11;i++){
                 var Player = match[battingTeam].playersStats[i];
                 var className = Player.battingStatus;
@@ -40,7 +41,8 @@
                     batsmen[0] = Player.player.name;
                 if(className == "notOut")
                     batsmen[1] = Player.player.name;
-
+                if(className == "out")
+                    wickets++;
                 if(className != "notPlayed")
                     var html = playerParser(Player,true,className,null);
                 else
@@ -58,12 +60,16 @@
                     var html = playerParser(Player,false,className,selectBowler);
                 $("#bowlingStats").append(html);
             }
-            //$("#instrike").text(batsmen[0]);
-            //$("#notout").text(batsmen[1]);
-            //$("#bowler").text(bowler);
+            $("#instrike").text(batsmen[0]);
+            $("#notout").text(batsmen[1]);
+            $("#bowler").text(bowler);
+            $("#teamScore").text(match[battingTeam].runsScored);
+            $("#teamBalls").text(match[bowlingTeam].ballsBowled);
+            $("#teamWickets").text(wickets);
+            console.log(batting);
             });
         function playerParser(Player,statBool,className,clickFunction){
-            var str = "<tr class = 'players "+className+"'>";
+            var str = "<tr id='"+Player.player._id+"' class = 'players "+className+"'>";
             str = str + "<td align='center'>"+Player.player.name+"</td>";
             if(statBool)
                 str = str + "<td align='center'>"+Player.player.battingSkill+"</td>";
@@ -80,12 +86,34 @@
             return html;
         }
         var selectBatsman = function(){
-            if(batsmen[0]!=""&&batsmen[1]!="")
+            if(!((batsmen[0]=="" || batsmen[1]=="")&&batting))
                 return;
+            var data = this.id;
+            alert("you have done it");
+            socket.emit("setBatsman",data);
         }
         var selectBowler = function(){
-            if(bowler!="")
+            if(!(bowler==""&&!batting))
                 return;
+            var data = this.id;
+            alert("you have done it");
+            socket.emit("setBowler",data);
+            }
+        function setPlayingStyle(styleObj){
+            if((batsmen[0]==""||batsmen[1]=="")&&batting){
+                alert("Please choose your batsman");
+                return;
+            }
+            if(bowler==""&&!batting){
+                alert("Please choose your bowler");
+                return;
+            }
+            playStyle = styleObj.innerHTML;
+            alert(playStyle);
+            socket.emit("setStyle",playStyle);
+            var buttons = $('.playStyle');
+            buttons[0].disabled = true;
+            buttons[1].disabled = true;
         }
     </script>
   </head>
@@ -105,5 +133,11 @@
   <div id="bowler" class="inAction" style="float:right">TEMPORARY</div>
   <div id="instrike" class="inAction" style="color:green">TEMPORARY</div><br>
   <div id="notout" class="inAction" style="color:yellow">TEMPORARY</div></body>
-
+  <br>
+<center> 
+<span id="teamScore" class="inAction">54</span><span class="inAction">/</span><span id="teamWickets" class="inAction" >5</span><br>
+<div id="teamBalls" class="inAction">30</div><br>
+<button class ="playStyle" type="button" onclick = "setPlayingStyle(this)" >Attack</button><br><br>
+<button class ="playStyle" type="button" onclick="setPlayingStyle(this)" >Defend</button>
+</center>
 </html>

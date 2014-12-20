@@ -3,10 +3,11 @@ var debug = require('debug')('firstApp');
 var app = require('../app');
 var mongoose = require('mongoose');
 var models = require('models');
+var fs = require('fs');
+var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
 var session = require('cookie-session');
 app.set('port', process.env.PORT || 9000);
 console.log("running");
-
 
 var server = app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + server.address().port);
@@ -33,6 +34,9 @@ nsp2.on('connection',function(socket){
     else
         teamSockets[matchId].team2 = socket;
 
+teamSockets[req.session.match._id].batStyle = null;
+teamSockets[req.session.match._id].ballStyle = null;
+
     var players = findClientsSocket(null,'/startGame');
    console.log(players.length);
     if(players.length==2){
@@ -41,28 +45,177 @@ nsp2.on('connection',function(socket){
     }
    
 });
-
 nsp.on('connection',function(socket){
     var req = getCookie(socket);
     var matchId = req.session.match._id;
+    var match;
 
- /* FOR DEVELOPMENT PURPOSES */
+// just in case if the socket fields change if user closes and opens the browser or some random crap
     if(!teamSockets[matchId])
         teamSockets[matchId] = {};
     if(req.session.match.team1.team == req.session.team._id)
         teamSockets[matchId].team1 = socket;
     else
         teamSockets[matchId].team2 = socket;
- /* FOR DEVELOPMENT PURPOSES */
+    socket.join(matchId);
+    initializePlayers(matchId);
+    console.log(req.session.team.name);
 
-   socket.join(matchId);
-    models.Match.findOne({_id : matchId})
-    .populate('team1.team team2.team team1.playersStats.player team2.playersStats.player')
-    .exec(function(err,match){
-        if(err){
-            console.log(err);
+socket.on('setBatsman',function(data){
+    console.log(req.session.team.name);
+    var callback= function(match){
+        var teamId = req.session.team._id;
+        if(!((match.team1.team._id==teamId && match.innings==1)||(match.team2.team._id==teamId && match.innings==2)))
             return;
+        var team,findObject={},updateObject={};
+        if(match.team1.team._id == teamId)
+            team = "team1";
+        else
+            team = "team2";
+        findObject[team+".team"] = teamId;
+        findObject[team+".playersStats"] = {
+            $elemMatch : {
+                player : data,
+                battingStatus : "notPlayed"
+            }
+        };
+        var flag = 0;
+        // check if the selected batsman should be inStrike or notOut
+        for(var i=0;i<match[team].playersStats.length;i++){
+            if(match[team].playersStats[i].battingStatus == "inStrike"){
+                updateObject[team+".playersStats.$.battingStatus"] = "notOut";
+                flag = flag +1;
+            }
+            if(match[team].playersStats[i].battingStatus == "notOut"){
+                updateObject[team+".playersStats.$.battingStatus"] = "inStrike";
+                flag = flag +1;
+            }       
         }
+        //to avoid exploit
+        if(flag == 2)
+            return;
+        // initially when no batsmen are chosen
+        if(flag == 0)
+                updateObject[team+".playersStats.$.battingStatus"] = "inStrike";
+       console.log(updateObject);
+        models.Match.findOneAndUpdate(findObject,{$set:updateObject},function(err,player){
+            if(err){
+                console.log(err);
+                return;
+            }
+            console.log(data);
+            console.log(player.team1.playersStats[0]);
+            initializePlayers(match._id);
+    });
+    };
+    getMatchDetails(req.session.match._id,callback);
+});
+
+socket.on('setBowler',function(data){
+    console.log(req.session.team.name);
+    var callback= function(match){
+        var teamId = req.session.team._id;
+        if(!((match.team1.team._id==teamId && match.innings==2)||(match.team2.team._id==teamId && match.innings==1)))
+            return;
+        var team,findObject={},updateObject={};
+        if(match.team1.team._id == teamId)
+            team = "team1";
+        else
+            team = "team2";
+        findObject[team+".team"] = teamId;
+        findObject[team+".playersStats"] = {
+            $elemMatch : {
+                player : data,
+                bowlingStatus : "oversLeft"
+            }
+        };
+        var flag = 0;
+        for(var i=0;i<match[team].playersStats.length;i++){
+            if(match[team].playersStats[i].bowlingStatus == "bowling"){
+                flag = flag +1;
+            }
+        }
+        //to avoid exploit
+        if(flag == 1)
+            return;
+        updateObject[team+".playersStats.$.bowlingStatus"] = "bowling";
+        models.Match.findOneAndUpdate(findObject,{$set:updateObject},function(err,player){
+            if(err){
+                console.log(err);
+                return;
+            }
+            console.log(data);
+            console.log(player[team].playersStats[0]);
+            initializePlayers(match._id);
+     });
+    };
+    getMatchDetails(req.session.match._id,callback);
+
+});
+
+socket.on("setStyle",function(data){
+  var callback = function(match){
+        var matchId = req.session.match._id;
+        if(req.session.team._id == match.team1.team._id){
+            if(match.innings == 1 && teamSockets[matchId].batStyle == null)
+                teamSockets[matchId].batStyle = data;
+            else if(match.innings == 2 && teamSockets[matchId].ballStyle == null)
+                teamSockets[matchId].ballStyle = data;
+            else
+                return;
+            }
+        if(req.session.team._id == match.team2.team._id){
+            if(match.innings == 2 && teamSockets[matchId].batStyle == null)
+                teamSockets[matchId].batStyle = data;
+            else if(match.innings == 1 && teamSockets[req.session.match._id].ballStyle == null)
+                teamSockets[matchId].ballStyle = data;
+            else
+                return;
+            }
+        if(teamSockets[matchId].batStyle!=null && teamSockets[matchId].ballStyle!=null){
+            console.log(teamSockets[req.session.match._id].batStyle);
+            console.log(teamSockets[req.session.match._id].ballStyle);
+            var batsman={},bowler={};
+            var statusObject = {}
+            statusObject.batStyle = teamSockets[matchId].batStyle;
+            statusObject.ballStyle = teamSockets[matchId].ballStyle;
+            teamSockets[matchId].batStyle = null;
+            teamSockets[matchId].ballStyle = null;
+            var batTeam = "";
+            var ballTeam = "";
+            if(match.innings == 1){
+                batTeam = "team1";
+                ballTeam = "team2";
+            }else{
+                batTeam = "team2";
+                ballTeam = "team1";
+            }
+            for(var i=0;i<match[batTeam].playersStats.length;i++){
+                if(match[batTeam].playersStats[i].battingStatus=="inStrike"){
+                    statusObject.batsman = match[batTeam].playersStats[i].player;
+                    break;
+                }
+            }
+            for(var i=0;i<match[ballTeam].playersStats.length;i++){
+                if(match[ballTeam].playersStats[i].bowlingStatus=="bowling"){
+                    statusObject.bowler = match[ballTeam].playersStats[i].player;
+                    break;
+                }
+            }
+            if(statusObject.batsman == "" || statusObject.bowler == "")
+                return;
+            var result = gameEngine(statusObject);
+            console.log(JSON.stringify(result));
+         }
+
+    };
+  getMatchDetails(req.session.match._id,callback);
+});
+});
+
+// to refresh the match details on the page
+function initializePlayers(matchId){
+var callback = function(match){
         var msg  = {
             match: match
             };
@@ -72,9 +225,24 @@ nsp.on('connection',function(socket){
             msg.batting = (match.innings==2);
             if(teamSockets[matchId].team2)
                 teamSockets[matchId].team2.emit('initialize',msg);
+        }
+getMatchDetails(matchId,callback);
+}
+
+//gets match details,populates
+function getMatchDetails(matchId,callback){
+    models.Match.findOne({_id : matchId})
+    .populate('team1.team team2.team team1.playersStats.player team2.playersStats.player')
+    .exec(function(err,data){
+        if(err){
+            console.log(err);
+            return;
+        }
+        callback(data);
+
                   
     });
-});
+}
 
 //to parse the cookie and get the session
 function getCookie(socket){
@@ -116,5 +284,114 @@ function findClientsSocket(roomId, namespace) {
         }
     }
     return res;
+}
+function gameEngine(statusObject){
+    var batsman = statusObject.batsman;
+    var bowler = statusObject.bowler;
+    // range of 0 - 100
+    var batSkill = batsman.battingSkill;
+    var ballSkill = bowler.bowlingSkill;
+    // alters skill from -x% to +x%
+    var batConfidence = batsman.confidence;
+    var ballConfidence = bowler.confidence;
+    //
+    //  defensive:
+    //          low wicket chance, but low runs
+    //  normal:
+    //          none
+    //  attacking:
+    //          high wicket chance, but high runs
+    var batStyle = statusObject.batStyle;
+    var ballStyle = statusObject.ballStyle;
+    // adavantageous skills
+    var finalBatPoints = (batSkill+(batSkill*batConfidence/100))/100;
+    var finalBallPoints = (ballSkill+(ballSkill*ballConfidence/100))/100;
+    // mean computed by Skill with Confidence
+    // variance computed by mean with style
+    var mean = 0.5+(finalBatPoints-finalBallPoints)/2;
+    var variance =  0.1;
+    var varianceFactor = 0.1;
+    if(batStyle=="Defend")
+        variance = variance - varianceFactor*finalBatPoints/2;
+    else
+        variance = variance + varianceFactor*finalBatPoints/2;
+    if(ballStyle=="Defend")
+        variance = variance - varianceFactor*finalBallPoints/2;
+    else
+        variance = variance + varianceFactor*finalBallPoints/2;
+
+
+    //random event
+    var randomEvent = Math.random();
+    //set if erf should be taken in negative, so we multiply xErf by -1,odd function
+    // go to wiki and learn about gaussian probability distribution and inverse transform sampling.
+    var negativeFlag = false;
+    var valueOfErf = 2*randomEvent - 1;
+    if(valueOfErf<0){
+        valueOfErf = valueOfErf*-1;
+        negativeFlag = true;
+    }
+    var xErf = 0.0;
+    for(var i=0;i<erfArr.length;i++){
+        xErf = erfArr[i].x;
+        if(parseFloat(erfArr[i].y) >= valueOfErf){
+            break;
+        }
+    }
+    if(negativeFlag)
+        xErf = xErf*-1;
+    var randomVariable = (xErf*Math.sqrt(2*variance))+mean;
+
+
+
+    //resultant 
+    var object={};
+    // u know what this is
+    var confidenceFactor;
+    if(randomVariable<0.14){
+        object.result = -1;
+        confidenceFactor = -3;
+    }
+    else if(randomVariable<0.50){
+        object.result = 0;
+        confidenceFactor = -2;
+    }
+    else if(randomVariable<0.60){
+        object.result = 1;
+        confidenceFactor = -1;
+    }
+    else if(randomVariable<0.65){
+        object.result = 2;
+        confidenceFactor = 0;
+    }
+    else if(randomVariable<0.75){
+        object.result = 3;
+        confidenceFactor = 1;
+    }
+    else if(randomVariable<0.85){
+        object.result = 4;
+        confidenceFactor = 2;
+    }
+    else{
+        object.result = 6;
+        confidenceFactor = 3;
+    }
+    console.log(batConfidence);
+    console.log(ballConfidence);
+    object.batsman = batsman;
+    object.bowler = bowler;
+    object.batsman.confidence = batConfidence + confidenceFactor;
+    if(object.batsman.confidence>25)
+        object.batsman.confidence = 25;
+    if(object.batsman.confidence<-25)
+        object.batsman.confidence = -25;
+
+    object.bowler.confidence = ballConfidence - confidenceFactor;
+    if(object.bowler.confidence>25)
+        object.bowler.confidence = 25;
+    if(object.bowler.confidence<-25)
+        object.bowler.confidence = -25;
+
+   return object;
 }
 
