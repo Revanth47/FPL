@@ -19,13 +19,15 @@ var io = require('socket.io').listen(server);
 
 var nsp = io.of('/gameEngine');
 
+
+//-----------------------------------------------------------------------------------------------------------------------------------
 // pre match namespace so that initialize isnt called twice if page is refreshed or navigated away from
 var nsp2 = io.of('/startGame');
 
 nsp2.on('connection',function(socket){
        var req = getCookie(socket);
        var matchId = req.session.match._id;
-
+        
 //associate team with socket altogether with the match
    if(!teamSockets[matchId])
         teamSockets[matchId] = {};
@@ -36,7 +38,7 @@ nsp2.on('connection',function(socket){
 
 teamSockets[req.session.match._id].batStyle = null;
 teamSockets[req.session.match._id].ballStyle = null;
-
+    console.log(json_stringify(teamSockets[req.session.match._id]));
     var players = findClientsSocket(null,'/startGame');
     if(players.length==2){
         //setup 1st innings of match
@@ -44,6 +46,9 @@ teamSockets[req.session.match._id].ballStyle = null;
     }
    
 });
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------
 nsp.on('connection',function(socket){
     var req = getCookie(socket);
     var matchId = req.session.match._id;
@@ -58,8 +63,11 @@ nsp.on('connection',function(socket){
         teamSockets[matchId].team2 = socket;
     socket.join(matchId);
     initializePlayers(matchId);
+    console.log(teamSockets);
     console.log(req.session.team.name);
 
+
+//----------------------------------------------------
 socket.on('setBatsman',function(data){
     var callback= function(match){
         var teamId = req.session.team._id;
@@ -106,6 +114,7 @@ socket.on('setBatsman',function(data){
     getMatchDetails(req.session.match._id,callback);
 });
 
+//----------------------------------------------------
 socket.on('setBowler',function(data){
     var callback= function(match){
         var teamId = req.session.team._id;
@@ -145,6 +154,7 @@ socket.on('setBowler',function(data){
 
 });
 
+//----------------------------------------------------
 socket.on("setStyle",function(data){
   var callback = function(match){
         var matchId = req.session.match._id;
@@ -169,8 +179,6 @@ socket.on("setStyle",function(data){
             var statusObject = {}
             statusObject.batStyle = teamSockets[matchId].batStyle;
             statusObject.ballStyle = teamSockets[matchId].ballStyle;
-            teamSockets[matchId].batStyle = null;
-            teamSockets[matchId].ballStyle = null;
             var batTeam = "";
             var ballTeam = "";
             if(match.innings == 1){
@@ -194,6 +202,10 @@ socket.on("setStyle",function(data){
             }
             if(statusObject.batsman == "" || statusObject.bowler == "")
                 return;
+
+            // call to gameAlgo and dealing with result
+//-----------------------------------------------------------------------------------------
+          
             var result = gameEngine(statusObject);
             result.batsman.save(function(err){
                 console.log(err);
@@ -204,25 +216,56 @@ socket.on("setStyle",function(data){
 
             var findObject = {},updateObject={};
             findObject["_id"] = match._id;
+            
+            // update batsman stats
             findObject[batTeam+".playersStats"] = {
             $elemMatch : {
                 player : result.batsman._id,
                 battingStatus:"inStrike"
                 }
             };
+            result.result = 2;
             if(result.result != -1){
-                updateObject[batTeam+".playersStats.$.runsScoredInMatch"] = result.result;
+                var runObject = {};
+                runObject[batTeam+".playersStats.$.runsScoredInMatch"] = result.result;
+                runObject[batTeam+".runsScored"] = result.result;
+                updateObject = {
+                    $inc : runObject
+                }
                 if(result.result % 2 !=0)
-                    updateObject[batTeam+".playersStats.$.battingStatus"] = "switchOver";
+                        updateObject[batTeam+".playersStats.$.battingStatus"] = "notOut";
             }
-            else
+            else{
                 updateObject[batTeam+".playersStats.$.battingStatus"] = "out";
-            models.Match.findOneAndUpdate(findObject,{$inc:updateObject},function(err,player){
-            if(err){
-                console.log(err);
-                return;
             }
+            models.Match.findOneAndUpdate(findObject,updateObject,function(err,player){
+                    if(err){
+                        console.log(err);
+                        return;
+                    }
+                    if(result.result != -1 && result.result % 2 != 0){
+                        var findObject = {},updateObject={};
+                        findObject["_id"] = match._id;
+
+                        findObject[batTeam+".playersStats"] = {
+                        $elemMatch : {
+                            player : {
+                                $ne : result.batsman._id
+                            },
+                        battingStatus:"notOut"
+                        }
+                        };
+                        updateObject[batTeam+".playersStats.$.battingStatus"] = "inStrike";
+                        models.Match.findOneAndUpdate(findObject,updateObject,function(err,player){
+                            if(err){
+                                console.log(err);
+                                return;
+                            }
+                        });
+                    }
             });
+            
+            //update bowler stats
             findObject = {};
             updateObject = {};
             findObject["_id"] = match._id;
@@ -233,20 +276,25 @@ socket.on("setStyle",function(data){
                 }
             };
             updateObject[ballTeam+".playersStats.$.ballsBowledInMatch"] = 1;
-            models.Match.findOneAndUpdate(findObject,{$inc:updateObject},function(err,player){
-            if(err){
-                console.log(err);
-                return;
-            }
+            updateObject[ballTeam+".ballsBowled"] = 1;
+            models.Match.findOneAndUpdate(findObject,{$inc:updateObject},function(err,match){
+                if(err){
+                    console.log(err);
+                    return;
+                }
+                
             });
-            console.log(JSON.stringify(result));
-         }
+//            console.log(JSON.stringify(result));
+            teamSockets[matchId].batStyle = null;
+            teamSockets[matchId].ballStyle = null;
+        }
 
     };
   getMatchDetails(req.session.match._id,callback);
 });
 });
 
+//-----------------------------------------------------------------------------------------------------------
 // to refresh the match details on the page
 function initializePlayers(matchId){
 var callback = function(match){
@@ -263,6 +311,7 @@ var callback = function(match){
 getMatchDetails(matchId,callback);
 }
 
+//-----------------------------------------------------------------------------------------------------------
 //gets match details,populates
 function getMatchDetails(matchId,callback){
     models.Match.findOne({_id : matchId})
@@ -278,6 +327,7 @@ function getMatchDetails(matchId,callback){
     });
 }
 
+//-----------------------------------------------------------------------------------------------------------
 //to parse the cookie and get the session
 function getCookie(socket){
   var cookieS = socket.request.headers.cookie;
@@ -290,6 +340,7 @@ function getCookie(socket){
     return req;
 }
 
+//-----------------------------------------------------------------------------------------------------------
 // to start the first innings and send message to client to redirect them to the match view from prematch view
 function initInnings(inningsNumber,matchId){
         models.Match.findOneAndUpdate({_id : matchId},{$set : {innings : inningsNumber}},{new:true},function(err,match){
@@ -302,6 +353,7 @@ function initInnings(inningsNumber,matchId){
         });
 }
 
+//-----------------------------------------------------------------------------------------------------------
 function findClientsSocket(roomId, namespace) {
 
     var res = [], ns = io.of(namespace ||"/");    // the default namespace is "/"
@@ -319,6 +371,7 @@ function findClientsSocket(roomId, namespace) {
     }
     return res;
 }
+//-----------------------------------------------------------------------------------------------------------
 function gameEngine(statusObject){
     var batsman = statusObject.batsman;
     var bowler = statusObject.bowler;
