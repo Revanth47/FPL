@@ -12,7 +12,35 @@
         var bowler;
         var playStyle; //Attack or Defend
         var match= {};
+        socket.on('resultFromServer',function(mesg){
+            var text="";
+            console.log(mesg);
+
+            if(mesg.result.result != -1){
+                text = mesg.result.batsman.name + " scored " + mesg.result.result + " off " + mesg.result.bowler.name + "\n";
+            }else{
+                text = mesg.result.batsman.name + " is out. Wicket taken by " + mesg.result.bowler.name + "\n";
+            }
+            switch(mesg.msg){
+                case "firstInnings":
+                    alert(text+"First Innings is over.");
+                    location.reload();
+                    break;
+                case "matchOver":
+                    alert(text+"Match is over."); 
+                    break;
+                case "":
+                    alert(text);
+                    break;
+                default:
+                    alert(text);
+            }
+            var buttons = $('.playStyle');
+            buttons[0].disabled = false;
+            buttons[1].disabled = false;
+});
         socket.on('initialize',function(msg){
+
             batting = msg.batting;
             match = msg.match;
             console.log(match);
@@ -67,6 +95,10 @@
             $("#teamBalls").text(match[bowlingTeam].ballsBowled);
             $("#teamWickets").text(wickets);
             console.log(batting);
+            if(match.innings == 2){
+                var temp = match[bowlingTeam].runsScored - match[battingTeam].runsScored; 
+                $("#misc").text(temp + " more runs to win" );               
+            }
             });
         function playerParser(Player,statBool,className,clickFunction){
             var str = "<tr id='"+Player.player._id+"' class = 'players "+className+"'>";
@@ -109,7 +141,6 @@
                 return;
             }
             playStyle = styleObj.innerHTML;
-            alert(playStyle);
             socket.emit("setStyle",playStyle);
             var buttons = $('.playStyle');
             buttons[0].disabled = true;
@@ -118,6 +149,7 @@
     </script>
   </head>
   <body>
+  <h5 id="misc"></h5>
   <div id="batting" style="float:left">
     <center><h3></h3></center>
     <table id ="battingStats" >

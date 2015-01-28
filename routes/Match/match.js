@@ -4,8 +4,9 @@ var fs = require('fs');
 var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
 var session = require('cookie-session');
 
-// handles prematch
+// handles prematch and postmatch
 router.post('/', function(req, res) {
+      if(req.body.header == "init"){
       var playersArray = JSON.parse(req.body.players);
       //console.log(req);
       var sess  = req.session;
@@ -27,6 +28,9 @@ router.post('/', function(req, res) {
                     res.render('prematch');
                     }
         });
+      }else{
+
+        }
 });
 
 router.get('/',function(req,res){

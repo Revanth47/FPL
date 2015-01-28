@@ -53,7 +53,8 @@ function submitList(){
          i++;
     }
     var postObject = {
-        players : "null"
+        players : "null",
+        header : "init"
         }
     postObject["players"] = JSON.stringify(selectedPlayers);
     post("http://localhost:9000/Match/",postObject); 
