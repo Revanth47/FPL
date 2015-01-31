@@ -28,6 +28,11 @@
                     break;
                 case "matchOver":
                     alert(text+"Match is over."); 
+                    var form = document.createElement("form");
+                    form.setAttribute("method", "POST");
+                    form.setAttribute("action","http://localhost:9000/Match/");
+                    document.body.appendChild(form);
+                    form.submit();
                     break;
                 case "":
                     alert(text);
