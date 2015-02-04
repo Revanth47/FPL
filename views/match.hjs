@@ -101,7 +101,7 @@
             $("#teamWickets").text(wickets);
             console.log(batting);
             if(match.innings == 2){
-                var temp = match[bowlingTeam].runsScored - match[battingTeam].runsScored; 
+                var temp = match[bowlingTeam].runsScored - match[battingTeam].runsScored+1; 
                 $("#misc").text(temp + " more runs to win" );               
             }
             });
@@ -156,13 +156,13 @@
   <body>
   <h5 id="misc"></h5>
   <div id="batting" style="float:left">
-    <center><h3></h3></center>
+    <center>Batting<h3></h3></center>
     <table id ="battingStats" >
     <tr><th>Name</th><th>Batting Skill</th><th>Confidence</th><th>Score</th></tr>
     </table>
   </div>
   <div id="bowling" style="float:right">
-    <center><h3></h3></center>
+    <center>Bowling<h3></h3></center>
     <table id ="bowlingStats">
     <tr><th>Name</th><th>Bowling Skill</th><th>Confidence</th><th>Balls bowled</th></tr>
     </table>

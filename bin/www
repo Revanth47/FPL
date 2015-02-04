@@ -39,12 +39,11 @@ nsp2.on('connection',function(socket){
 
 teamSockets[req.session.match._id].batStyle = null;
 teamSockets[req.session.match._id].ballStyle = null;
-    console.log(json_stringify(teamSockets[req.session.match._id]));
     var players = findClientsSocket(null,'/startGame');
     if(players.length==2){
-        //setup 1st innings of match
-        initInnings(1,matchId);
-    }
+                teamSockets[matchId].team1.emit('initialize',"alo");
+                teamSockets[matchId].team2.emit('initialize',"alo");   
+                }
    
 });
 
@@ -305,7 +304,7 @@ socket.on("setStyle",function(data){
                     player : result.bowler._id,
                     bowlingStatus: "bowling",
                     ballsBowledInMatch: {
-                        $mod : [6,0]
+                        $mod : [match.matchSpecs.numberOfBallsInOver,0]
                         }
                      }
                 };
@@ -333,7 +332,7 @@ socket.on("setStyle",function(data){
                         $elemMatch : {
                             player : result.bowler._id,
                             ballsBowledInMatch: {
-                             $mod : [6,0]
+                             $mod : [match.matchSpecs.bowlerOverRestriction*6,0]
                              }
                         }
                         };
@@ -371,7 +370,7 @@ socket.on("setStyle",function(data){
                          if(match[batTeam].playersStats[i].battingStatus=="out")
                             wickets++;
                     }
-                    if(wickets==10){
+                    if(wickets==match.matchSpecs.numberOfWickets){
                         if(match.innings==1){
                             resultObject['msg'] = "firstInnings";                           
                             initInnings(2,match._id);
@@ -379,8 +378,7 @@ socket.on("setStyle",function(data){
                         else
                             resultObject['msg'] = "matchOver";
                     }
-                    // change below to control total number of overs in a match
-                    else if(match[ballTeam].ballsBowled==30){
+                    else if(match[ballTeam].ballsBowled==(match.matchSpecs.numberOfOvers*6)){
                         if(match.innings==1){
                             resultObject['msg'] = "firstInnings";
                             initInnings(2,match._id);
@@ -465,9 +463,8 @@ function initInnings(inningsNumber,matchId){
                 console.log(err);
                 return;
             }
-            //teamSockets[matchId].team1.emit('initialize',"alo");
-            //teamSockets[matchId].team2.emit('initialize',"alo");
-            initializePlayers(match._id);
+
+                initializePlayers(match._id);
         });
 }
 

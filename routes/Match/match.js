@@ -6,29 +6,49 @@ var session = require('cookie-session');
 
 // handles prematch and postmatch
 router.post('/', function(req, res) {
+    //prematch
       if(req.body.header == "init"){
           var playersArray = JSON.parse(req.body.players);
           //console.log(req);
           var sess  = req.session;
-
-          var updateQuery={};
-          if(sess.match.team1.team==sess.team._id){
-                   updateQuery= {$set:{"team1.playersStats" : playersArray}};
-            }else{
-                   updateQuery= {$set:{"team2.playersStats" : playersArray}};
-            }
-          models.Match.findOneAndUpdate({
-                _id : sess.match._id
-            },updateQuery,{
-                new:true
+          var tempArray = Array();
+          for(var i=0;i<11;i++)
+              tempArray[i] = playersArray[i].player;
+          models.Player.find({
+              "_id":{
+                  $in : tempArray
+                },
+              "team":sess.team._id 
             },function(err,data){
-                    if(err)
-                        console.log(err);
-                    else{
-                        res.render('prematch');
-                        }
-            });
-      }else{
+                if(err){
+                    console.log(err);
+                    return;
+                }
+                if(data.length!=11){
+                    res.send("woah,we got a hacker here..real badass man!");
+                    return;
+                }
+                var updateQuery={};
+              if(sess.match.team1.team==sess.team._id){
+                       updateQuery= {$set:{"team1.playersStats" : playersArray}};
+                }else{
+                       updateQuery= {$set:{"team2.playersStats" : playersArray}};
+                }
+              models.Match.findOneAndUpdate({
+                    _id : sess.match._id
+                },updateQuery,{
+                    new:true
+                },function(err,data){
+                        if(err)
+                            console.log(err);
+                        else{
+                            res.render('prematch');
+                            }
+                });
+          });
+      }
+      //postmatch
+      else{
            var sess = req.session;
            var matchId = sess.match._id;
            models.Match.findOne({_id : matchId})
@@ -44,7 +64,7 @@ router.post('/', function(req, res) {
                     resultText = match.team1.team.name + " won the match by " + parseInt(match.team1.runsScored - match.team2.runsScored) + " runs.";
                     winnerId = match.team1.team._id;
                 }else if(match.team1.runsScored<match.team2.runsScored){
-                    resultText = match.team2.team.name + " won the match by " + parseInt(match.team2.runsScored - match.team1.runsScored) + " runs.";
+                    resultText = match.team2.team.name + " won the match with " + parseInt(match.matchSpecs.numberOfOvers*6 - match.team1.ballsBowled) + " balls to spare.";
                     winnerId = match.team2.team._id;
                 }else{
 
@@ -62,9 +82,28 @@ router.post('/', function(req, res) {
 });
 
 router.get('/',function(req,res){
-    if(req.session.match&&req.session.match.winner==null)
-            res.render('match');
+
+    if(req.session.match&&req.session.match.winner==null){
+           var matchId = req.session.match._id;
+           models.Match.findOne({_id : matchId},function(err,data){
+               if(err){
+                   console.log(err);
+                   return;
+                }
+                var tm = "team2";
+                if(data.team1.team.toString()==req.session.team._id)
+                    tm = "team1";
+                if(data.team1.playersStats.length==1||data.team2.playersStats.length==1){
+                    if(data[tm].playersStats.length==1)
+                        res.redirect('selectPlayers');
+                    else
+                        res.render('prematch');
+                }
+                else
+                    res.render('match');
+            });
+    }
     else
-        res.send(404);
+        res.redirect('selectPlayers');
 });
 module.exports = router;
