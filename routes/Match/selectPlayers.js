@@ -73,24 +73,5 @@ router.get('/:team',function(req,res){
 
 module.exports = router;
 // admin for creating match
-function createMatch(){
-   models.Team.findOne({
-        name:"csk"
-    },function(err,team1){
-        models.Team.findOne({
-            name:"rcb"
-        },function(err,team2){
-            var match = new models.Match({
-                team1:{
-                    team:team1
-                },
-                team2:{
-                    team:team2
-                }
-            });
-            match.save(function(err,data){
-            });
-        });
-    });
-}
+
  

@@ -67,7 +67,7 @@ router.post('/', function(req, res) {
                     resultText = match.team2.team.name + " won the match with " + parseInt(match.matchSpecs.numberOfOvers*6 - match.team1.ballsBowled) + " balls to spare.";
                     winnerId = match.team2.team._id;
                 }else{
-
+                    //postponed to next version
                 }
             match.winner = winnerId;
             match.save(function(err,data){

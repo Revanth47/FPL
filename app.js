@@ -10,6 +10,8 @@ model = require('models');
 
 var match = require('./routes/Match/match');
 var selectPlayers = require('./routes/Match/selectPlayers');
+var admin = require('./routes/admin');
+
 var app = express();
 app.use(session({
     secret:'PragyanPremierLeague',
@@ -32,6 +34,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/Match/selectPlayers',selectPlayers);
 app.use('/Match/',match);
+app.use('/admin',admin);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

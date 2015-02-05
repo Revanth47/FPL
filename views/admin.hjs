@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <title>ppl match</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script>
+
+    </script>
+    </head>
+    <body>
+    <div id="createTeam">
+    <select name="id1">
+    {{#teams}}
+    <option value="{{_id}}">{{name}}</option>
+    {{/teams}}
+    </select> 
+    <br>
+    <select name="id2">
+    {{#teams}}
+    <option value="{{_id}}">{{name}}</option>
+    {{/teams}}
+    </select>
+    </div>
+    </body>
+</html>
