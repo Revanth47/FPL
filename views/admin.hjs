@@ -8,18 +8,47 @@
     </script>
     </head>
     <body>
-    <div id="createTeam">
+    <div id="displayMatches">
+    <table>
+    {{#matches}}
+        <tr><td>{{team1.team.name}}</td><td>{{team1.runsScored}}</td><td>{{team1.ballsBowled}}</td>
+        <td>{{team2.team.name}}</td><td>{{team2.runsScored}}</td><td>{{team2.ballsBowled}}</td>
+        <td>{{innings}}</td><td>{{winner}}</td><td>{{superOver}}</td></tr>
+    {{/matches}}
+    </table>
+    </div>    <form id="createMatch" action="admin" method="POST">
+    <h3>Create Match</h3>
+    <input type="hidden" name="header" value="createMatch"/>
     <select name="id1">
     {{#teams}}
     <option value="{{_id}}">{{name}}</option>
     {{/teams}}
     </select> 
     <br>
+    <br>
     <select name="id2">
     {{#teams}}
     <option value="{{_id}}">{{name}}</option>
     {{/teams}}
     </select>
+    <br>
+    <br>
+    <input type="submit" value="submit"/>
+    </form>
+    <br><br>
+    <div id="displayTeams">
+    <table>
+    {{#teams}}
+        <tr><td>{{name}}</td><td>{{cash}}</td></tr>
+    {{/teams}}
+    </table>
     </div>
+    <form id="createTeam" action="admin" method="POST">
+    <h3>Create Team</h3>
+    <input type="hidden" name="header" value="createTeam"/>
+    <input type="text" name="name" />
+    <br><br>
+    <input type ="submit" value="submit" />
+    </form>
     </body>
 </html>

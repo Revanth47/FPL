@@ -27,29 +27,50 @@ router.get('/',auth,function(req,res){
             models.Team.find({},function(err,data){
                 if(err){
                     console.log(err);
-                    cb(null);
+                    cb(true);
                     return;
                 }
-                cb(true,data);
+                cb(null,data);
             });
-        }
-    ],function(err,results){
+        },
+        function(cb){
+            //get matches
+            models.Match.find({})
+            .populate("team1.team team2.team")
+            .exec(function(err,data){
+                if(err){
+                    console.log(err);
+                    cb(true);
+                    return;
+                }
+                cb(null,data);
+            });
+         }],function(err,results){
+      if(err){
+            res.send("check logs");
+          return;
+      }
       console.log(results);
       res.render("admin",{
-            teams:results[0]
+            teams:results[0],
+            matches:results[1]
         });
     });
 });
 router.post('/',auth,function(req,res){
 function render(err){
-    res.send("yollo");       
+    if(err){
+        res.send("check logs");
+        return;
+    }
+    res.redirect('admin');
 }   
-    var sess  = req.session;
         switch(req.body.header){
             case "createMatch":
                 createMatch(req.body.id1,req.body.id2,render);
                 break;
             case "createTeam":
+                createTeam(req.body.name,render);
                 break;
             default:
                 render(false);
@@ -94,6 +115,23 @@ function createMatch(teamId1,teamId2,callback){
                 callback(false);
             });
         });
+    });
+}
+function createTeam(name,callback){
+    if(name==null||name==""){
+        callback(true);
+        return;
+    }
+    var team = new models.Team({
+        name : name
+    });
+    team.save(function(err,data){
+        if(err){
+            console.log(err);
+            callback(true);
+            return;
+        }
+        callback(false);
     });
 }
 module.exports = router;
