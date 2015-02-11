@@ -10,11 +10,14 @@
     <body>
     <div id="displayMatches">
     <table>
+    <form id="editMatch" action="admin" method="POST">
+    <input type="hidden" name="header" value="editMatch" />
     {{#matches}}
         <tr><td>{{team1.team.name}}</td><td>{{team1.runsScored}}</td><td>{{team1.ballsBowled}}</td>
         <td>{{team2.team.name}}</td><td>{{team2.runsScored}}</td><td>{{team2.ballsBowled}}</td>
-        <td>{{innings}}</td><td>{{winner}}</td><td>{{superOver}}</td></tr>
+        <td>{{innings}}</td><td>{{winner}}</td><td>{{superOver}}</td><td><button name ="delete" value="{{_id}}" onclick="document.getElementById('editMatch').submit()">Delete</button></td></tr>
     {{/matches}}
+    </form>
     </table>
     </div>    <form id="createMatch" action="admin" method="POST">
     <h3>Create Match</h3>

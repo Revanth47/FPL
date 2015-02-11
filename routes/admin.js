@@ -72,11 +72,25 @@ function render(err){
             case "createTeam":
                 createTeam(req.body.name,render);
                 break;
+            case "editMatch":
+                if("delete" in req.body)
+                    deleteMatch(req.body['delete'],render);
+                break;
             default:
                 render(false);
         }
 });
-
+function deleteMatch(matchId,callback){
+    models.Match.findOneAndRemove({
+        _id : matchId
+    },function(err,data){
+        if(err){
+            console.log(err);
+            callback(true);
+        }
+        callback(false);
+    });
+}
 function createMatch(teamId1,teamId2,callback){
     if(teamId1==teamId2){
         callback(true);
