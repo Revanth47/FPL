@@ -25,7 +25,7 @@ router.post('/', function(req, res) {
                     return;
                 }
                 if(data.length!=11){
-                    res.send("woah,we got a hacker here..real badass man!");
+                    res.send("woah,we got a hacker here..real badass man!").end();
                     return;
                 }
                 var updateQuery={};

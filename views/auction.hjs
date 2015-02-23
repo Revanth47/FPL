@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+  <head>
+    <title>ppl match</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script>
+function post(path, params) {
+
+    var form = document.createElement("form");
+    form.setAttribute("method", "POST");
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+
+        if(params.hasOwnProperty(key)) {
+
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+        }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+function getIndex(team){
+    for(var i=0;i<teams.length;i++){
+        if(team.id==teams[i]._id)
+            return i;
+    }
+}
+function buyPlayer(team){
+    if(team==-1){
+        var postObject = {
+            header:"buyPlayer",
+            team:"-1"
+        }
+    }
+    else{
+        index = getIndex(team);
+        var money = prompt("Please enter the amount");
+        if(parseInt(money)>parseInt(teams[index]["cash"]))
+            alert("yo");
+        var postObject = {
+            header:"buyPlayer",
+            team:JSON.stringify(teams[index]),
+            money:money
+        }
+    }
+    post('/auction',postObject);
+}
+var teams = {{{teamsjs}}};
+    </script>
+    </head>
+    <body>
+    <div id="playerDetails" style="float:right">
+    {{player.name}}<br>
+    Batting Skill: {{player.battingSkill}}<br>
+    Bowling Skill: {{player.bowlingSkill}}<br>
+    Confidence: {{player.confidence}}<br> 
+    </div>
+
+    <div id="teams">
+{{#teams}}
+   {{name}}
+   {{cash}} 
+   <button type="button" id="{{_id}}" onclick="buyPlayer(this);">Buy Player</button>
+   <button type="button" id="{{_id}}" onclick="showPlayers(this);">Show Players</button>
+   <br><br>
+{{/teams}}
+    </div>
+    <button type="button" id="skipPlayer" onclick="buyPlayer(-1)">Skip Player</button>
+    </body>
+</html>
