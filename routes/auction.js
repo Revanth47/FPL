@@ -42,7 +42,11 @@ router.get('/',auth,function(req,res){
                 res.send("Error").end();
                 return;
             }
+            if(sess.auctionCount == players.length){
+                sess.auctionCount = 0;
+            }
             sess.playerOnAuction = players[sess.auctionCount];
+            console.log(sess.playerOnAuction);
             res.render('auction',{
                 player:players[sess.auctionCount],
                 teams:teams,
@@ -61,10 +65,25 @@ router.post('/',auth,function(req,res){
     }
     switch(req.body.header){
         case "buyPlayer":
- //           req.session.auctionCount++;
-            buyPlayer(req.body,req.sess.playerOnAuction,redirect);
+            if(req.body.team==-1)
+                req.session.auctionCount++;
+            buyPlayer(req.body,req.session.playerOnAuction,redirect);
             break;
-        case "getPlayers":
+        default:
+            break;
+    }
+});
+router.post('/ajax',auth,function(req,res){
+    switch(req.body.header){
+        case "getPlayer":
+            models.Player.find({
+                team : req.body.team
+            },function(err,data){
+                if(err){
+                    console.log(err);
+                }
+                res.send(JSON.stringify(data)).end();
+            });
             break;
         default:
             break;
@@ -75,7 +94,7 @@ function buyPlayer(object,player,callback){
         callback(false);
         return;
     }
-    var money = object.money;
+    var bid = object.money;
     object.team = JSON.parse(object.team);
     models.Team.findOne({
         _id : object.team._id,
@@ -85,9 +104,9 @@ function buyPlayer(object,player,callback){
             callback(true);
             return;
         }
-        if(team.cash<money){
+        if(team.cash<bid){
             console.log("not enough cash");
-            callback(false);
+            callback(true);
             return;
         }
         models.Player.findOneAndUpdate({
@@ -98,9 +117,21 @@ function buyPlayer(object,player,callback){
                 team:object.team._id
             }
         },function(err,data){
+            if(err){
+                console.log(err);
+                callback(true);
+                return;
+            }
+            team.cash = team.cash - bid;
+            team.save(function(err){
+                if(err){
+                    console.log(err);
+                    return;
+                }
 
+                callback(false);
+            });
         });
-        callback(false);
     });    
 }
 module.exports = router;

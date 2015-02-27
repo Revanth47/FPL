@@ -82,7 +82,8 @@ router.post('/', function(req, res) {
 });
 
 router.get('/',function(req,res){
-
+    console.log(req.session.match);
+    console.log(req.session.match&&req.session.match.winner==null);
     if(req.session.match&&req.session.match.winner==null){
            var matchId = req.session.match._id;
            models.Match.findOne({_id : matchId},function(err,data){
@@ -95,7 +96,7 @@ router.get('/',function(req,res){
                     tm = "team1";
                 if(data.team1.playersStats.length==1||data.team2.playersStats.length==1){
                     if(data[tm].playersStats.length==1)
-                        res.redirect('selectPlayers');
+                        res.redirect('/Match/selectPlayers');
                     else
                         res.render('prematch');
                 }
@@ -104,6 +105,6 @@ router.get('/',function(req,res){
             });
     }
     else
-        res.redirect('selectPlayers');
+        res.redirect('/Match/selectPlayers');
 });
 module.exports = router;

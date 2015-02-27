@@ -3,7 +3,17 @@
   <head>
     <title>ppl match</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/toast/simply-toast.min.js"></script>
     <script>
+    $.extend(true, $.simplyToast.defaultOptions,
+    {
+        allowDismiss:true,
+        delay:20000,
+        align:"center"
+    });
 function post(path, params) {
 
     var form = document.createElement("form");
@@ -41,9 +51,13 @@ function buyPlayer(team){
     }
     else{
         index = getIndex(team);
-        var money = prompt("Please enter the amount");
-        if(parseInt(money)>parseInt(teams[index]["cash"]))
-            alert("yo");
+        var money = prompt("Please enter the amount for the team : " +teams[index]["name"]);
+        if(money==null)
+            return;
+        if(parseInt(money)>parseInt(teams[index]["cash"])){
+            $.simplyToast("Not enough cash","danger");
+            return;
+        }
         var postObject = {
             header:"buyPlayer",
             team:JSON.stringify(teams[index]),
@@ -51,6 +65,19 @@ function buyPlayer(team){
         }
     }
     post('/auction',postObject);
+}
+function showPlayers(team){
+    $.post('auction/ajax',{
+        header:"getPlayer",
+        team:team.id
+    },function(result){
+        var str ="";
+        result = JSON.parse(result);
+        for(var i=0;i<result.length;i++){
+            str = str + parseInt(i+1) + " " +result[i]["name"] + "<br>";
+        }
+        $.simplyToast(str,"info");
+    });
 }
 var teams = {{{teamsjs}}};
     </script>

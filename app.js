@@ -12,6 +12,7 @@ var match = require('./routes/Match/match');
 var selectPlayers = require('./routes/Match/selectPlayers');
 var admin = require('./routes/admin');
 var auction = require('./routes/auction');
+var setSession = require('./routes/setSession');
 
 var app = express();
 app.use(session({
@@ -37,6 +38,7 @@ app.use('/Match/selectPlayers',selectPlayers);
 app.use('/Match/',match);
 app.use('/admin',admin);
 app.use('/auction',auction);
+app.use('/setSession',setSession);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
