@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
-var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
+var obj = JSON.parse(fs.readFileSync('players.json', 'utf8'));
 var session = require('cookie-session');
 var async = require('async');
 var basicAuth = require('basic-auth');
@@ -20,6 +20,27 @@ var auth = function (req, res, next) {
         return unauthorized(res);
     };
 }
+router.get('/import',auth,function(req,res){
+    console.log(obj.length);
+    for(var i=0;i<obj.length;i++){
+            if(obj[i]["name"]!=null){
+                var player = new models.Player({
+                    name : obj[i]["name"],
+                    battingSkill : obj[i]["batting"],
+                    bowlingSkill : obj[i]["bowling"],
+                    confidence : obj[i]["confidence"],
+                    team : null,
+                    imgSource : obj[i]["playerId"],
+                    misc : parseInt(obj[i]["cost"]/1000)
+                });
+                player.save(function(err,data){
+                    if(err){
+                        console.log(err);
+                    }
+                });
+            }
+     }
+});
 router.get('/',auth,function(req,res){
     async.parallel([
         function(cb){
@@ -114,10 +135,10 @@ function createMatch(teamId1,teamId2,callback){
             }
             var match = new models.Match({
                 team1:{
-                    team:team1
+                    team:team1._id
                 },
                 team2:{
-                    team:team2
+                    team:team2._id
                 }
             });
             match.save(function(err,data){

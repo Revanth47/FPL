@@ -71,34 +71,57 @@ function showPlayers(team){
         header:"getPlayer",
         team:team.id
     },function(result){
-        var str ="";
+        var str =""
         result = JSON.parse(result);
         for(var i=0;i<result.length;i++){
-            str = str + parseInt(i+1) + " " +result[i]["name"] + "<br>";
+            str = str + parseInt(i+1) + ". " +result[i]["name"] + "<br>";
         }
-        $.simplyToast(str,"info");
+        document.getElementById("modalBody").innerHTML=str;
+        $("#modalButton").click();
+//        $.simplyToast(str,"info");
     });
 }
 var teams = {{{teamsjs}}};
     </script>
     </head>
-    <body>
-    <div id="playerDetails" style="float:right">
-    {{player.name}}<br>
-    Batting Skill: {{player.battingSkill}}<br>
-    Bowling Skill: {{player.bowlingSkill}}<br>
-    Confidence: {{player.confidence}}<br> 
-    </div>
-
-    <div id="teams">
+    <img src="images/delta.png" style="float:left;margin-left:10px;height:80px;"/>
+    <center><img src="images/pragyan.png" style="height:80px"/></center>
+    <body style="background-image:url('images/auctionBack.jpg')">
+    <div id="teams" style="margin-left:20px;float:left;margin-top:30px;">
 {{#teams}}
-   {{name}}
-   {{cash}} 
-   <button type="button" id="{{_id}}" onclick="buyPlayer(this);">Buy Player</button>
-   <button type="button" id="{{_id}}" onclick="showPlayers(this);">Show Players</button>
-   <br><br>
+<h3>
+   <span class="label label-default">{{name}}</span>
+   <span class="label label-warning">{{cash}}</span> 
+   <button type="button" id="{{_id}}" class="btn btn-success" onclick="buyPlayer(this);">Buy Player</button>
+   <button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers(this);">Show Players</button>
+</h3>
 {{/teams}}
     </div>
-    <button type="button" id="skipPlayer" onclick="buyPlayer(-1)">Skip Player</button>
+    
+    <div id="playerDetails" style="float:right;margin-right:200px;margin-top:50px">
+    <div class="panel panel-primary">
+    <div class="panel-heading">
+    <h1 class="panel-title">{{player.name}}</h1>
+    </div>
+    <div class="panel-body">
+    <img src="/pics/{{player.imgSource}}.jpg" class="img-thumbnail" style="width:200px;height:200px"/>
+    <h4><span class="label label-info">Batting Skill: {{player.battingSkill}}</span></h4>
+    <h4><span class="label label-info">Bowling Skill: {{player.bowlingSkill}}</span></h4>
+    <h4><span class="label label-info">Confidence: {{player.confidence}}</span></h4>
+    <h4><span class="label label-info">Lowest Bid: {{player.misc}}</span></h4>
+    </div>
+    </div>
+    <button type="button" id="skipPlayer" class="btn btn-danger" onclick="buyPlayer(-1)">Skip Player</button>
+    </div>
+<br>
+<button type="button" id="modalButton" style="visibility:hidden" data-toggle="modal" data-target=".bs-example-modal-sm">Small modal</button>
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+      <div id="modalBody" class="modal-content">
+                </div>
+                  </div>
+                  </div>
+
     </body>
 </html>

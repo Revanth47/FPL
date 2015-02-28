@@ -9,7 +9,7 @@ router.post('/', function(req, res) {
     //prematch
       if(req.body.header == "init"){
           var playersArray = JSON.parse(req.body.players);
-          //console.log(req);
+          console.log(playersArray);
           var sess  = req.session;
           var tempArray = Array();
           for(var i=0;i<11;i++)

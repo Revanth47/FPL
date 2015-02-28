@@ -55,7 +55,7 @@ router.get('/',function(req,res){
                         match.team2.playersStats = null;
                         req.session.match = match;
                         models.Player.find({
-                            team:teamInSession
+                            team:teamInSession._id
                         },function(err,players){
                           //  console.log(req.session.match);
                             if(err)

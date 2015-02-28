@@ -2,19 +2,33 @@
 <html>
   <head>
     <title>Select Players</title>
-  </head>
+      <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/toast/simply-toast.min.js"></script>
+ </head>
   <body>
    <center><h2 id="matchId">{{matchId}}</h2></center>
-  <div id="unSelectedList" style="position:absolute;left:0px">
+   <div class="panel panel-primary"style="position:absolute;left:10px" >
+    <div class="panel-heading">
+    <h1 class="panel-title">Squad</h1>
+    </div>
+  <div id="unSelectedList" class="panel-body">
    {{#list}}
-   <div id = "{{_id}}">
+   <h6><button type="button" class="btn btn-info" id = "{{_id}}">
    {{name}} {{battingSkill}} {{bowlingSkill}} {{confidence}}
-   </div>
+   </button></h6>
    {{/list}}
     </div>
-    <div id="selectedList" style="position:absolute;right:0px">
     </div>
-    <center><button type="button" onclick="submitList()">Submit</button>
+    <div class="panel panel-primary"style="position:absolute;right:10px" >
+    <div class="panel-heading">
+    <h1 class="panel-title">Playing 11</h1>
+    </div>
+     <div id="selectedList" class="panel-body">
+    </div>
+    </div>
+    <center><button type="button" class="btn btn-danger" onclick="submitList()">Submit</button>
 </body>
 <script>
 var selectedCount = 0;
@@ -49,7 +63,7 @@ function submitList(){
     var i=0;
     while(child = child.nextSibling){
          selectedPlayers[i] = {};
-         selectedPlayers[i].player = child.id;
+         selectedPlayers[i].player = child.firstChild.id;
          i++;
     }
     var postObject = {
