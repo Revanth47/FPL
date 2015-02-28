@@ -13,6 +13,7 @@ var auth = function (req, res, next) {
     var sess = req.session;
     var user = basicAuth(req);
     if (!user || !user.name || !user.pass || sess.team) {
+        console.log(sess.team);
         return unauthorized(res);
     };
     if (user.name === 'admin' && user.pass === 'adinguotha') {

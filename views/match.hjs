@@ -10,7 +10,14 @@
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="/toast/simply-toast.min.js"></script>
     <script>
-        var socket = io('/gameEngine');
+    $.extend(true, $.simplyToast.defaultOptions,
+    {
+        allowDismiss:true,
+        delay:5000,
+        align:"center",
+        
+    });
+    var socket = io('/gameEngine');
         var batting;//set to true if team is batting else set it to false
         var batsmen = Array(2);
         var bowler;
@@ -27,11 +34,11 @@
             }
             switch(mesg.msg){
                 case "firstInnings":
-                    alert(text+"First Innings is over.");
+                    alert(text+"First Innings is over.","danger");
                     location.reload();
                     break;
                 case "matchOver":
-                    alert(text+"Match is over."); 
+                    alert(text+"Match is over.","danger"); 
                     var form = document.createElement("form");
                     form.setAttribute("method", "POST");
                     form.setAttribute("action","http://localhost:9000/Match/");
@@ -39,10 +46,10 @@
                     form.submit();
                     break;
                 case "":
-                    alert(text);
+                    $.simplyToast(text,"danger");
                     break;
                 default:
-                    alert(text);
+                    $.simplyToast(text,"danger");
             }
             var buttons = $('.playStyle');
             buttons[0].disabled = false;
@@ -130,23 +137,21 @@
             if(!((batsmen[0]=="" || batsmen[1]=="")&&batting))
                 return;
             var data = this.id;
-            alert("you have done it");
             socket.emit("setBatsman",data);
         }
         var selectBowler = function(){
             if(!(bowler==""&&!batting))
                 return;
             var data = this.id;
-            alert("you have done it");
             socket.emit("setBowler",data);
             }
         function setPlayingStyle(styleObj){
             if((batsmen[0]==""||batsmen[1]=="")&&batting){
-                alert("Please choose your batsman");
+                $.simplyToast("Please choose your batsman","danger");
                 return;
             }
             if(bowler==""&&!batting){
-                alert("Please choose your bowler");
+               $.simplyToast("Please choose your bowler","danger");
                 return;
             }
             playStyle = styleObj.innerHTML;
@@ -171,9 +176,10 @@
     <tr><th>Name</th><th>Bowling Skill</th><th>Confidence</th><th>Balls bowled</th></tr>
     </table>
   </div>
-  <h2><div id="bowler" class="inAction label label-primary" style="float:right">TEMPORARY</div></h2>
-  <h2><div id="instrike" class="inAction label label-success" style="color:green">TEMPORARY</div><br></h2>
-  <h2><div id="notout" class="inAction label label-info" style="color:yellow">TEMPORARY</div></body></h2>
+  <br><br><br>
+  <h3><div id="bowler" class="inAction label label-primary" style="float:right">TEMPORARY</div></h3>
+  <h3><div id="instrike" class="inAction label label-success" style="">TEMPORARY</div><br></h3>
+  <h3><div id="notout" class="inAction label label-info" style="">TEMPORARY</div></body></h3>
   <br>
 <center> 
 <span id="teamScore" class="inAction">54</span><span class="inAction">/</span><span id="teamWickets" class="inAction" >5</span><br>
