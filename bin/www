@@ -456,7 +456,7 @@ function getCookie(socket){
 }
 
 //-----------------------------------------------------------------------------------------------------------
-// to start the first innings and send message to client to redirect them to the match view from prematch view
+// to start the innings and send message to client to redirect them to the match view from prematch view
 function initInnings(inningsNumber,matchId){
         models.Match.findOneAndUpdate({_id : matchId},{$set : {innings : inningsNumber}},{new:true},function(err,match){
             if(err||match==null){
