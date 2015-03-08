@@ -5,11 +5,13 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src="/socket.io/socket.io.js"></script>
     <script src="/javascripts/jquery.min.js"></script>
-      <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+    <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
     <script src="/javascripts/jquery.min.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="/toast/simply-toast.min.js"></script>
+    <script src="/javascripts/jquery.tablednd.0.7.min.js"></script>
     <script>
+              
     $.extend(true, $.simplyToast.defaultOptions,
     {
         allowDismiss:true,
@@ -115,6 +117,23 @@
                 var temp = match[bowlingTeam].runsScored - match[battingTeam].runsScored+1; 
                 $("#misc").text(temp + " more runs to win" );               
             }
+            if(batting)
+             $("#battingStats").tableDnD({
+                 onDrop : function(table,row){
+                     console.log(row);
+                      var rows = table.tBodies[0].rows;
+                    for(var i=0;i<rows.length;i++){
+                        if(row.id==rows[i].id){
+                            var data = {
+                                index : i-1,
+                                movedId : row.id
+                            }
+                            socket.emit("reorderBatsman",data);
+                            break;
+                        }
+                    }
+                }
+            });
             });
         function playerParser(Player,statBool,className,clickFunction){
             var str = "<tr id='"+Player.player._id+"' class = 'players "+className+"'>";
@@ -134,10 +153,7 @@
             return html;
         }
         var selectBatsman = function(){
-            if(!((batsmen[0]=="" || batsmen[1]=="")&&batting))
-                return;
-            var data = this.id;
-            socket.emit("setBatsman",data);
+            return;
         }
         var selectBowler = function(){
             if(!(bowler==""&&!batting))
