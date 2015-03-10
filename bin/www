@@ -225,7 +225,6 @@ socket.on("setStyle",function(data){
                 console.log(err);
             });
 
-         
 //parallel update of bat and ball stats
 
             async.parallel
@@ -239,7 +238,6 @@ socket.on("setStyle",function(data){
                 battingStatus:"inStrike"
                 }
             };
-            result.result = -1;
             if(result.result != -1){
                 var runObject = {};
                 runObject[batTeam+".playersStats.$.runsScoredInMatch"] = result.result;
@@ -286,13 +284,12 @@ socket.on("setStyle",function(data){
                         findObject["_id"] = match._id;
                         findObject[batTeam+".playersStats"] = {
                             $elemMatch : {
-                                battingStatus:"notOut"
+                                battingStatus:"notPlayed"
                             }
                         };
                         updateObject[batTeam+".playersStats.$.battingStatus"] = "inStrike";
                         models.Match.findOneAndUpdate(findObject,updateObject,function(err,match){
-                            console.log(match);
-                            if(err||match==null){
+                            if(err){
                                 console.log(err);
                                 cb(true);
                                 return;
