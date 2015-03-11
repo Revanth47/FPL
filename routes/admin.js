@@ -24,16 +24,15 @@ router.get('/import',auth,function(req,res){
     console.log(obj.length);
     for(var i=0;i<obj.length;i++){
             if(obj[i]["name"]!=null){
-                var player = new models.Player({
+                var defaultPlayer = new models.DefaultPlayer({
                     name : obj[i]["name"],
                     battingSkill : obj[i]["batting"],
                     bowlingSkill : obj[i]["bowling"],
                     confidence : obj[i]["confidence"],
-                    team : null,
                     imgSource : obj[i]["playerId"],
-                    misc : parseInt(obj[i]["cost"]/1000)
+                    cost : parseInt(obj[i]["cost"]/1000)
                 });
-                player.save(function(err,data){
+                defaultPlayer.save(function(err,data){
                     if(err){
                         console.log(err);
                     }

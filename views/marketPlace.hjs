@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>ppl match</title>
+    <title>Market Place</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
     <script src="/javascripts/jquery.min.js"></script>
@@ -36,40 +36,28 @@ function post(path, params) {
     document.body.appendChild(form);
     form.submit();
 }
-function getIndex(team){
-    for(var i=0;i<teams.length;i++){
-        if(team.id==teams[i]._id)
-            return i;
-    }
-}
-function buyPlayer(team){
-    if(team==-1){
+
+function buyPlayer(flag){
+    if(flag==-1){
         var postObject = {
             header:"buyPlayer",
             team:"-1"
         }
     }
     else{
-        index = getIndex(team);
-        var money = prompt("Please enter the amount for the team : " +teams[index]["name"]);
-        if(money==null)
-            return;
-        if(parseInt(money)>parseInt(teams[index]["cash"])){
+        if(parseInt(player["cost"])>parseInt(team["cash"])){
             $.simplyToast("Not enough cash","danger");
             return;
         }
         var postObject = {
-            header:"buyPlayer",
-            team:JSON.stringify(teams[index]),
-            money:money
+            header:"buyPlayer"
         }
     }
-    post('/auction',postObject);
+    post('/Market',postObject);
 }
-function showPlayers(team){
-    $.post('auction/ajax',{
-        header:"getPlayer",
-        team:team.id
+function showPlayers(){
+    $.post('/Market/ajax',{
+        header:"getPlayer"
     },function(result){
         var str =""
         result = JSON.parse(result);
@@ -81,21 +69,19 @@ function showPlayers(team){
 //        $.simplyToast(str,"info");
     });
 }
-var teams = {{{teamsjs}}};
+var team = {{{teamjs}}};
+var player = {{{playerjs}}};
     </script>
     </head>
-    <img src="images/delta.png" style="float:left;margin-left:10px;height:80px;"/>
-    <center><img src="images/pragyan.png" style="height:80px"/></center>
-    <body style="background-image:url('images/auctionBack.jpg')">
+    <center><img src="/images/delta.png" style="width:80px"/></center>
+    <body style="background-image:url('/images/auctionBack.jpg')">
     <div id="teams" style="margin-left:20px;float:left;margin-top:30px;">
-{{#teams}}
 <h3>
-   <span class="label label-default">{{name}}</span>
-   <span class="label label-warning">{{cash}}</span> 
-   <button type="button" id="{{_id}}" class="btn btn-success" onclick="buyPlayer(this);">Buy Player</button>
-   <button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers(this);">Show Players</button>
+   <span class="label label-default">{{team.name}}</span>
+   <span class="label label-warning">{{team.cash}}</span> 
+   <button type="button" id="{{_id}}" class="btn btn-success" onclick="buyPlayer(0);">Buy Player</button>
+   <button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers();">Show Players</button>
 </h3>
-{{/teams}}
     </div>
     
     <div id="playerDetails" style="float:right;margin-right:200px;margin-top:50px">
@@ -108,7 +94,7 @@ var teams = {{{teamsjs}}};
     <h4><span class="label label-info">Batting Skill: {{player.battingSkill}}</span></h4>
     <h4><span class="label label-info">Bowling Skill: {{player.bowlingSkill}}</span></h4>
     <h4><span class="label label-info">Confidence: {{player.confidence}}</span></h4>
-    <h4><span class="label label-info">Lowest Bid: {{player.misc}}</span></h4>
+    <h4><span class="label label-info">Cost: {{player.cost}}</span></h4>
     </div>
     </div>
     <button type="button" id="skipPlayer" class="btn btn-danger" onclick="buyPlayer(-1)">Skip Player</button>
