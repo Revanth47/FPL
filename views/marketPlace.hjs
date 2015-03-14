@@ -4,7 +4,10 @@
     <title>Market Place</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+    <link href="/stylesheets/theme.default.css" rel="stylesheet">
     <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/jquery.tablesorter.min.js"></script>
+    <script src="javascripts/jquery.tablesorter.widgets.min.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="/toast/simply-toast.min.js"></script>
     <script>
@@ -13,6 +16,12 @@
         allowDismiss:true,
         delay:20000,
         align:"center"
+    });
+    $(function(){
+
+        $('table').tablesorter({
+
+        });
     });
 function post(path, params) {
 
@@ -37,22 +46,16 @@ function post(path, params) {
     form.submit();
 }
 
-function buyPlayer(flag){
-    if(flag==-1){
-        var postObject = {
-            header:"buyPlayer",
-            team:"-1"
-        }
-    }
-    else{
-        if(parseInt(player["cost"])>parseInt(team["cash"])){
+function buyPlayer(player,cost){
+
+        if(parseInt(cost)>parseInt(team["cash"])){
             $.simplyToast("Not enough cash","danger");
             return;
         }
         var postObject = {
-            header:"buyPlayer"
+            header:"buyPlayer",
+            id:player
         }
-    }
     post('/Market',postObject);
 }
 function showPlayers(){
@@ -70,34 +73,37 @@ function showPlayers(){
     });
 }
 var team = {{{teamjs}}};
-var player = {{{playerjs}}};
+var playersArray = {{{playersjs}}};
     </script>
     </head>
-    <center><img src="/images/delta.png" style="width:80px"/></center>
-    <body style="background-image:url('/images/auctionBack.jpg')">
-    <div id="teams" style="margin-left:20px;float:left;margin-top:30px;">
+    <body>
+    <img src="/images/delta.png" style="width:80px;float:right"/>
+    <h1><span class="page-header">Market Place</span></h1>
+    <div id="teams" style="float:left">
 <h3>
    <span class="label label-default">{{team.name}}</span>
    <span class="label label-warning">{{team.cash}}</span> 
-   <button type="button" id="{{_id}}" class="btn btn-success" onclick="buyPlayer(0);">Buy Player</button>
    <button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers();">Show Players</button>
 </h3>
-    </div>
-    
-    <div id="playerDetails" style="float:right;margin-right:200px;margin-top:50px">
-    <div class="panel panel-primary">
-    <div class="panel-heading">
-    <h1 class="panel-title">{{player.name}}</h1>
-    </div>
-    <div class="panel-body">
-    <img src="/pics/{{player.imgSource}}.jpg" class="img-thumbnail" style="width:200px;height:200px"/>
-    <h4><span class="label label-info">Batting Skill: {{player.battingSkill}}</span></h4>
-    <h4><span class="label label-info">Bowling Skill: {{player.bowlingSkill}}</span></h4>
-    <h4><span class="label label-info">Confidence: {{player.confidence}}</span></h4>
-    <h4><span class="label label-info">Cost: {{player.cost}}</span></h4>
-    </div>
-    </div>
-    <button type="button" id="skipPlayer" class="btn btn-danger" onclick="buyPlayer(-1)">Skip Player</button>
+    </div>     
+    <br><br>
+    <div id="playerDetails" style="margin-top:50px;margin-left:10px" class="table-responsive">
+    <span style="color:#959595;font-size:12px;font-weight:700">Sort multiple columns simultaneously by holding down the shift key and clicking a second, third or even fourth column header!</span>
+    <table class="table table-striped tablesorter" style="display:inline-block">
+    <thead>
+    <tr><th>Name</th><th>Batting Skill</th><th>Bowling Skill</th><th>Confidence</th><th>Cost</th></tr>
+    </thead>
+    <tbody>
+{{#players}}
+    <tr><td>{{name}}</td>
+    <td>{{battingSkill}}</td>
+    <td>{{bowlingSkill}}</td>
+    <td>{{confidence}}</td>
+    <td>{{cost}}</td>
+    <td><button type="button" class="btn btn-success" onclick="buyPlayer('{{_id}}','{{cost}}');">Buy Player</button></td></tr>
+{{/players}}
+</tbody>
+    </table>
     </div>
 <br>
 <button type="button" id="modalButton" style="visibility:hidden" data-toggle="modal" data-target=".bs-example-modal-sm">Small modal</button>

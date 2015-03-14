@@ -12,8 +12,7 @@ router.get('/',function(req,res){
         res.send("No Team Selected").end();
         return;
     }
-    if(sess.auctionCount==null)
-        sess.auctionCount = 0;
+
     models.Player.find({
         team:teamInSession._id
     })
@@ -40,17 +39,12 @@ router.get('/',function(req,res){
                     res.send("Error").end();
                     return;
                 }
-                if(sess.auctionCount == players.length){
-                    sess.auctionCount = 0;
-                }
-                sess.playerOnAuction = players[sess.auctionCount];
-                console.log(sess.playerOnAuction);
                 console.log(teamInSession);
                 res.render('marketPlace',{
-                    player:players[sess.auctionCount],
                     team:teamInSession,
                     teamjs:JSON.stringify(teamInSession),
-                    playerjs:JSON.stringify(players[sess.auctionCount])
+                    players:players,
+                    playersjs:JSON.stringify(players)
                 });         
         });
     });
@@ -78,7 +72,7 @@ router.post('/',function(req,res){
             }
             var object = {
                 "team" : teamInSession,
-                "player" : req.session.playerOnAuction
+                "player" : req.body.id
             }
             buyPlayer(object,redirect);
             break;
@@ -106,7 +100,7 @@ router.post('/ajax',function(req,res){
     }
 });
 function buyPlayer(object,callback){
-    var player = object.player;
+    var player_id = object.player;
     models.Team.findOne({
         _id : object.team._id,
     },function(err,team){
@@ -116,40 +110,53 @@ function buyPlayer(object,callback){
             return;
         }
             models.DefaultPlayer.findOne({
-                "_id" : player["_id"]
+                "_id" : player_id
             },function(err,player){
-
-                if(team.cash<player.cost){
-                    console.log("not enough cash");
-                    callback(true);
-                    return;
-                }
-                var PlayerInsert = new models.Player({
-                    name : player["name"],
-                    battingSkill : player["battingSkill"],
-                    bowlingSkill : player["bowlingSkill"],
-                    confidence : player["confidence"],
-                    imgSource : player["playerId"],
-                    cost : parseInt(player["cost"]),
-                    refer : player,
-                    team : team
-                });
-                PlayerInsert.save(function(err,data){
+                models.Player.findOne({
+                    "refer":player_id,
+                    "team":team._id
+                },function(err,shouldBeNull){
                     if(err){
                         console.log(err);
                         callback(true);
                         return;
                     }
-                    team.cash = parseInt(team.cash - player["cost"]);
-                    team.save(function(err){
+                    if(shouldBeNull!=null){
+                        callback(false);
+                        return;
+                    }
+                    if(team.cash<player.cost){
+                        console.log("not enough cash");
+                        callback(true);
+                        return;
+                    }
+                    var PlayerInsert = new models.Player({
+                        name : player["name"],
+                        battingSkill : player["battingSkill"],
+                        bowlingSkill : player["bowlingSkill"],
+                        confidence : player["confidence"],
+                        imgSource : player["playerId"],
+                        cost : parseInt(player["cost"]),
+                        refer : player,
+                        team : team
+                    });
+                    PlayerInsert.save(function(err,data){
                         if(err){
                             console.log(err);
                             callback(true);
                             return;
                         }
-                        callback(false);
-                    });
-             });
+                        team.cash = parseInt(team.cash - player["cost"]);
+                        team.save(function(err){
+                            if(err){
+                                console.log(err);
+                                callback(true);
+                                return;
+                            }
+                            callback(false);
+                        });
+                 });
+            });
         });
     });    
 }
