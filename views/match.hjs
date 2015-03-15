@@ -6,7 +6,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/javascripts/jquery.min.js"></script>
     <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
-    <script src="/javascripts/jquery.min.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="/toast/simply-toast.min.js"></script>
     <script src="/javascripts/jquery.tablednd.0.7.min.js"></script>

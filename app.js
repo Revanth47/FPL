@@ -13,6 +13,7 @@ var selectPlayers = require('./routes/Match/selectPlayers');
 var admin = require('./routes/admin');
 var market = require('./routes/Market/marketPlace');
 var setSession = require('./routes/setSession');
+var arena = require('./routes/Arena/arena');
 
 var app = express();
 app.use(session({
@@ -37,6 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/Match/selectPlayers',selectPlayers);
 app.use('/Match/',match);
 app.use('/admin',admin);
+app.use('/Arena',arena);
 app.use('/Market',market);
 app.use('/setSession',setSession);
 

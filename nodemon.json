@@ -1,4 +1,4 @@
 {
-    "watch":["bin/www","routes/*","public/*","app.js","views/*","models.js"],
+    "watch":["bin/*","routes/*","public/*","app.js","views/*","models.js"],
     "verbose":true
 }

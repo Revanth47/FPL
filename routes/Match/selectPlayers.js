@@ -36,11 +36,12 @@ router.get('/',function(req,res){
 // the lastest match collection for the team, so create match collection in admin panel only for the upcoming match, not for all future matches
                 timeOfMatch:-1
             })
+            .populate('team1.team team2.team')
             .exec(function(err,match){
                 if(err)
                     console.log(err);
                 else if(!match||match.winner!=null){
-                    res.send("No Matches for your team");
+                    res.send('You have no matches. <a href="/Arena">Click here to go to Arena</a>');
                 }
                 else{
                     if((match.team1.team.toString()==teamInSession._id.toString()&&match.team1.playersStats.length!=1)||(match.team2.team.toString()==teamInSession._id.toString()&&match.team2.playersStats.length!=1)){
@@ -63,7 +64,9 @@ router.get('/',function(req,res){
                             else
                                 res.render('selectPlayers',{
                                     list:players,
-                                    matchId:match._id
+                                    matchId:match._id,
+                                    team1:match.team1.team.name,
+                                    team2:match.team2.team.name
                                 });
                         });
                 }

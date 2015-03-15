@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Arena</title>
+    </head>
+    <body>
+    <div id="invitesList" styl"float:right">
+    </div>
+
+    <div id="teamList">
+    </div>
+
+    <script src="/javascripts/react.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/javascripts/JSXTransformer.js"></script>
+    <script type="text/jsx">
+    var socket = io('/arena');
+    
+    socket.on('redirect',function(msg){
+        location.replace('/Match/selectPlayers');
+    });
+    var TeamRow = React.createClass({
+        getInitialState: function(){
+            return {clicked:false,buttonValue:"Invite"};
+        },
+        render : function(){
+          this.setInviteHandler();
+          return <tr id={this.props.row.team._id}><td>{this.props.row.team.name}</td><td><input type="button" value={this.state.buttonValue} disabled={this.state.clicked} onClick= {this.clickHandler}/></td></tr>;
+        },
+        clickHandler:function(evt){
+            if(this.buttonValue!="Invited"){
+                this.setState({
+                    clicked : true,
+                    buttonValue : "Invited"
+                });
+                socket.emit('invite',this.props.row.team._id);
+            }
+        },
+        setInviteHandler:function(){
+            var self = this;
+            socket.on(this.props.row.team._id,function(msg){
+                self.setState({
+                    buttonValue : "Accept Invitation"
+                });
+            });
+        }
+    });
+    var TeamList = React.createClass({
+        render:function(){
+            var teams = this.props.tms;
+            var html=[];
+            return (
+                <table><tbody>{teams.map(function(team){
+                return <TeamRow key={team.id} row={team}/>;
+                })
+                }</tbody></table>
+            )
+        }
+
+});
+   
+    var teams = {};
+    var team = {{{team}}}
+    var invites = {};
+    socket.on('updateOnlineList',function(teamList){
+        teams = [];
+        for(var key in teamList){
+            if(key!=team._id)
+                teams.push(teamList[key]);
+        }
+        if(teams!=null){
+            React.render(
+                <TeamList tms = {teams} />,
+                document.getElementById('teamList')
+            ); 
+        }
+    });
+
+
+</script>
+</body>
+</html>

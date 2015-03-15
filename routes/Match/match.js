@@ -29,7 +29,7 @@ router.post('/', function(req, res) {
                     return;
                 }
                 var updateQuery={};
-              if(sess.match.team1.team==sess.team._id){
+              if(sess.match.team1.team._id==sess.team._id){
                        updateQuery= {$set:{"team1.playersStats" : playersArray}};
                 }else{
                        updateQuery= {$set:{"team2.playersStats" : playersArray}};
@@ -74,6 +74,7 @@ router.post('/', function(req, res) {
                 if(err)
                     console.log(err);
             });
+            req.sess.match = null;
                 res.render('postmatch',{
                     result:resultText
                 });
@@ -90,6 +91,11 @@ router.get('/',function(req,res){
                if(err){
                    console.log(err);
                    return;
+                }
+                if(data==null){
+                    req.session.match = null;
+                    res.redirect('/Match/selectPlayers');
+                    return;
                 }
                 var tm = "team2";
                 if(data.team1.team.toString()==req.session.team._id)

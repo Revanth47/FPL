@@ -8,7 +8,7 @@
     <script src="/toast/simply-toast.min.js"></script>
  </head>
   <body>
-   <center><h2 id="matchId">{{matchId}}</h2></center>
+   <center><h2 id="matchId">{{team1}} vs {{team2}}</h2></center>
    <div class="panel panel-primary"style="position:absolute;left:10px" >
     <div class="panel-heading">
     <h1 class="panel-title">Squad</h1>
