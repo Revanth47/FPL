@@ -42,9 +42,13 @@ router.get('/',function(req,res){
                 console.log(teamInSession);
                 res.render('marketPlace',{
                     team:teamInSession,
+                    LayoutTeam : req.session.team,
                     teamjs:JSON.stringify(teamInSession),
                     players:players,
-                    playersjs:JSON.stringify(players)
+                    playersjs:JSON.stringify(players),
+                    partials:{
+                        layout : 'layout'
+                    }
                 });         
         });
     });

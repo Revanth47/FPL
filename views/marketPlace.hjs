@@ -1,16 +1,6 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Market Place</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
-    <link href="/stylesheets/theme.default.css" rel="stylesheet">
-    <script src="/javascripts/jquery.min.js"></script>
-    <script src="/javascripts/jquery.tablesorter.min.js"></script>
-    <script src="javascripts/jquery.tablesorter.widgets.min.js"></script>
-    <script src="/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/toast/simply-toast.min.js"></script>
-    <script>
+{{<layout}}
+{{$content}}
+<script>
     $.extend(true, $.simplyToast.defaultOptions,
     {
         allowDismiss:true,
@@ -77,12 +67,10 @@ var playersArray = {{{playersjs}}};
     </script>
     </head>
     <body>
-    <img src="/images/delta.png" style="width:80px;float:right"/>
     <h1><span class="page-header">Market Place</span></h1>
     <div id="teams" style="float:left">
 <h3>
-   <span class="label label-default">{{team.name}}</span>
-   <span class="label label-warning">{{team.cash}}</span> 
+   <span class="label label-warning" style="margin-left:5px">{{team.cash}}</span> 
    <button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers();">Show Players</button>
 </h3>
     </div>     
@@ -115,5 +103,5 @@ var playersArray = {{{playersjs}}};
                   </div>
                   </div>
 
-    </body>
-</html>
+{{/content}}
+{{/layout}}

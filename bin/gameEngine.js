@@ -57,7 +57,6 @@ module.exports = {
         var req = getCookie(socket);
         var matchId = req.session.match._id;
         var match;
-
     // just in case if the socket fields change if user closes and opens the browser or some random crap
         if(!teamSockets[matchId])
             teamSockets[matchId] = {};
@@ -398,11 +397,15 @@ module.exports = {
                             resultObject['msg'] = "";
                             initializePlayers(match._id);
                         }
-                        teamSockets[matchId].batStyle = null;
-                        teamSockets[matchId].ballStyle = null;
-                        resultObject['result'] = result
-                        teamSockets[matchId].team1.emit('resultFromServer',resultObject);
-                        teamSockets[matchId].team2.emit('resultFromServer',resultObject);
+                        if(resultObject['msg']=="matchOver"){
+                            endGame(match._id,function(){
+                                emitCriticalResult(resultObject,result,matchId);
+                            });
+                        }else{
+                            teamSockets[matchId].batStyle = null;
+                            teamSockets[matchId].ballStyle = null;
+                            emitCriticalResult(resultObject,result,matchId);
+                        }
                     });
                 });
 
@@ -413,6 +416,57 @@ module.exports = {
       getMatchDetails(req.session.match._id,callback);
     });
     });
+//---------------------------------------------------------------------------------------------------------
+function emitCriticalResult(resultObject,result,matchId){
+    resultObject['result'] = result;
+        teamSockets[matchId].team1.emit('resultFromServer',resultObject);
+    teamSockets[matchId].team2.emit('resultFromServer',resultObject);
+
+}
+//----------------------------------------------------------------------------------------------------------
+function endGame(matchId,callback){
+    models.Match.findOne({_id : matchId})
+               .populate('team1.team team2.team')
+               .exec(function(err,match){
+                   if(err){
+                       console.log(err);
+                       return;
+                    }
+                    var winnerId;
+                    if(match.team1.runsScored>match.team2.runsScored){
+                        winnerId = match.team1.team._id;
+                    }else if(match.team1.runsScored<match.team2.runsScored){
+                        winnerId = match.team2.team._id;
+                    }else if(match.team1.ballsBowled>match.team2.ballsBowled){
+                        winnerId = match.team1.team._id;
+                    }else if(match.team1.ballsBowled<match.team2.ballsBowled){
+                        winnerId = match.team2.team._id;
+                    }else{
+                        var wickets1,wickets2;
+                        for(var i=0;i<match["team1"].playersStats.length;i++){
+                             if(match["team1"].playersStats[i].battingStatus=="out")
+                                wickets1++;
+                        }
+                        for(var i=0;i<match["team2"].playersStats.length;i++){
+                             if(match["team2"].playersStats[i].battingStatus=="out")
+                                wickets2++;
+                        }
+                        if(wickets1<wickets2)
+                            winnerId = match.team1.team._id;
+                        else
+                            winnerId = match.team2.team._id;
+                    }
+                match.winner = winnerId;
+                match.save(function(err,data){
+                    if(err){
+                        console.log(err);
+                        return;
+                    }
+                    callback();
+                });
+
+});
+};
 //-----------------------------------------------------------------------------------------------------------
 function findClientsSocket(roomId, namespace) {
 

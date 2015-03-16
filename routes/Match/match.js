@@ -7,7 +7,8 @@ var session = require('cookie-session');
 // handles prematch and postmatch
 router.post('/', function(req, res) {
     //prematch
-      if(req.body.header == "init"){
+      console.log(JSON.stringify(req.session));
+      if(req.session.matchStatus == "pre-match"){
           var playersArray = JSON.parse(req.body.players);
           console.log(playersArray);
           var sess  = req.session;
@@ -51,35 +52,27 @@ router.post('/', function(req, res) {
       else{
            var sess = req.session;
            var matchId = sess.match._id;
-           models.Match.findOne({_id : matchId})
-           .populate('team1.team team2.team')
+           models.Match.findOne({
+               _id : sess.match._id,
+               winner : {
+                   $ne : null
+                }
+            })
+           .populate('winner')
            .exec(function(err,match){
-               if(err){
-                   console.log(err);
-                   return;
-                }
-                var resultText = "";
-                var winnerId;
-                if(match.team1.runsScored>match.team2.runsScored){
-                    resultText = match.team1.team.name + " won the match by " + parseInt(match.team1.runsScored - match.team2.runsScored) + " runs.";
-                    winnerId = match.team1.team._id;
-                }else if(match.team1.runsScored<match.team2.runsScored){
-                    resultText = match.team2.team.name + " won the match with " + parseInt(match.matchSpecs.numberOfOvers*6 - match.team1.ballsBowled) + " balls to spare.";
-                    winnerId = match.team2.team._id;
-                }else{
-                    //postponed to next version
-                }
-            match.winner = winnerId;
-            match.save(function(err,data){
-                if(err)
-                    console.log(err);
-            });
-            req.sess.match = null;
-                res.render('postmatch',{
-                    result:resultText
-                });
+               var resultText = "Match was won by "+match.winner.name;
+               req.session.match = null;
+               req.session.matchStatus = "post-match";
+                    res.render('postmatch',{
+                        result:resultText,
+                        LayoutTeam : req.session.team,
+                        partials : {
+                            layout : 'layout'
+                        }
+                    });
             });
         }
+
 });
 
 router.get('/',function(req,res){
@@ -106,8 +99,15 @@ router.get('/',function(req,res){
                     else
                         res.render('prematch');
                 }
-                else
-                    res.render('match');
+                else{
+                    req.session.matchStatus = "inGame";
+                    res.render('match',{
+                        LayoutTeam : req.session.team,
+                        partials : {
+                            layout : 'layout'
+                        }
+                    });
+                }
             });
     }
     else

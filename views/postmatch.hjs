@@ -1,14 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>PPL Match</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-
-    </script>
-    </head>
-    <body>
+{{<layout}}
+{{$content}}
     <h3>{{result}}</h3>
-    </body>
-</html>
+{{/content}}
+{{/layout}}

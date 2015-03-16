@@ -61,13 +61,19 @@ router.get('/',function(req,res){
                           //  console.log(req.session.match);
                             if(err)
                                 console.log(err);
-                            else
+                            else{
+                                req.session.matchStatus = "pre-match";
                                 res.render('selectPlayers',{
                                     list:players,
+                                    LayoutTeam : req.session.team,
                                     matchId:match._id,
                                     team1:match.team1.team.name,
-                                    team2:match.team2.team.name
+                                    team2:match.team2.team.name,
+                                    partials : {
+                                        layout:'layout'
+                                    }
                                 });
+                            }
                         });
                 }
                 }

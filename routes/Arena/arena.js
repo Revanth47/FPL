@@ -39,7 +39,11 @@ router.get('/',function(req,res){
             return;
         }
             res.render('arena',{
-                team : JSON.stringify(sess.team)
+                team : JSON.stringify(sess.team),
+                LayoutTeam : req.session.team,
+                partials : {
+                    layout : 'layout'
+                }
             });
 
     }

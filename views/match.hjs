@@ -1,14 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>PPL Match</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/javascripts/jquery.min.js"></script>
-    <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
-    <script src="/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/toast/simply-toast.min.js"></script>
-    <script src="/javascripts/jquery.tablednd.0.7.min.js"></script>
+{{<layout}}
+{{$content}}
     <script>
               
     $.extend(true, $.simplyToast.defaultOptions,
@@ -176,8 +167,6 @@
             buttons[1].disabled = true;
         }
     </script>
-  </head>
-  <body>
   <h5 id="misc"></h5>
   <div id="batting" style="float:left">
     <center>Batting<h3></h3></center>
@@ -194,7 +183,7 @@
   <br><br><br>
   <h3><div id="bowler" class="inAction label label-primary" style="float:right">TEMPORARY</div></h3>
   <h3><div id="instrike" class="inAction label label-success" style="">TEMPORARY</div><br></h3>
-  <h3><div id="notout" class="inAction label label-info" style="">TEMPORARY</div></body></h3>
+  <h3><div id="notout" class="inAction label label-info" style="">TEMPORARY</div></h3>
   <br>
 <center> 
 <span id="teamScore" class="inAction">54</span><span class="inAction">/</span><span id="teamWickets" class="inAction" >5</span><br>
@@ -202,4 +191,5 @@
 <button class ="playStyle btn btn-danger" type="button" onclick = "setPlayingStyle(this)" >Attack</button><br><br>
 <button class ="playStyle btn btn-success" type="button" onclick="setPlayingStyle(this)" >Defend</button>
 </center>
-</html>
+{{/content}}
+{{/layout}}

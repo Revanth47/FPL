@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Select Players</title>
-      <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
-    <script src="/javascripts/jquery.min.js"></script>
-    <script src="/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/toast/simply-toast.min.js"></script>
- </head>
-  <body>
+{{<layout}}
+{{$content}}
+    <span class="label label-primary" style="float:right">Players Selected: <span id="playerCount">0</span></span>
    <center><h2 id="matchId">{{team1}} vs {{team2}}</h2></center>
    <div class="panel panel-primary"style="position:absolute;left:10px" >
     <div class="panel-heading">
@@ -29,7 +22,6 @@
     </div>
     </div>
     <center><button type="button" class="btn btn-danger" onclick="submitList()">Submit</button>
-</body>
 <script>
 var selectedCount = 0;
 window.onload = function(){
@@ -40,6 +32,7 @@ window.onload = function(){
 }
 function getSelected(){
     selectedCount++;
+    document.getElementById("playerCount").innerHTML = selectedCount;
     var player = this;
     document.getElementById("unSelectedList").removeChild(player);
     player.onclick = getUnSelected;
@@ -47,6 +40,7 @@ function getSelected(){
 }
 function getUnSelected(){
     selectedCount--;
+    document.getElementById("playerCount").innerHTML = selectedCount;
     var player = this;
     document.getElementById("selectedList").removeChild(player);
     player.onclick = getSelected;
@@ -96,4 +90,5 @@ function post(path, params) {
     form.submit();
 }
 </script>
-</html>
+{{/content}}
+{{/layout}}

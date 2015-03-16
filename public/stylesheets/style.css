@@ -8,18 +8,21 @@ a {
   color: #00B7FF;
 }
 .inAction{
-    margin-left:10px;
-    margin-right:10px;
     font-size:300%;
 }
 .out,.oversDone{
     background-color : rgba(256,0,0,0.3);
-    cursor:not-allowed;
 }
-.notPlayed,.oversLeft{
-    cursor:pointer;
-    background-color : rgba(0,0,0,0);
-}
-.notPlayed:hover,.oversLeft:hover{
+.inStrike,.notOut{
     background-color : rgba(0,256,0,0.3);
+}
+.player{
+    cursor:pointer;
+}
+.oversLeft:hover{
+        background-color : rgba(0,256,0,0.3);
+}
+.notPlayed:hover{
+        background-color : rgba(0,0,256,0.3);
+
 }

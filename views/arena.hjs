@@ -1,21 +1,10 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Arena</title>
-    </head>
-    <body>
-    <div id="invitesList" styl"float:right">
+{{<layout}}
+{{$content}}
+    <h1><span class="page-header">Arena</span></h1>
+    <div id="teamList" style="margin-left:10px;display:inline-block">
     </div>
 
-    <div id="teamList">
-    </div>
-
-    <script src="/javascripts/react.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/javascripts/jquery.min.js"></script>
-    <script src="/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/javascripts/JSXTransformer.js"></script>
-    <script type="text/jsx">
+   <script type="text/jsx">
     var socket = io('/arena');
     
     socket.on('redirect',function(msg){
@@ -23,17 +12,18 @@
     });
     var TeamRow = React.createClass({
         getInitialState: function(){
-            return {clicked:false,buttonValue:"Invite"};
+            return {clicked:false,buttonValue:"Invite",buttonClass:"btn btn-info "};
         },
         render : function(){
           this.setInviteHandler();
-          return <tr id={this.props.row.team._id}><td>{this.props.row.team.name}</td><td><input type="button" value={this.state.buttonValue} disabled={this.state.clicked} onClick= {this.clickHandler}/></td></tr>;
+          return <tr id={this.props.row.team._id}><td>{this.props.row.team.name}</td><td><input className={this.state.buttonClass}type="button" value={this.state.buttonValue} disabled={this.state.clicked} onClick= {this.clickHandler}/></td></tr>;
         },
         clickHandler:function(evt){
             if(this.buttonValue!="Invited"){
                 this.setState({
                     clicked : true,
-                    buttonValue : "Invited"
+                    buttonValue : "Invited",
+                    buttonClass:"btn btn-default"
                 });
                 socket.emit('invite',this.props.row.team._id);
             }
@@ -41,8 +31,10 @@
         setInviteHandler:function(){
             var self = this;
             socket.on(this.props.row.team._id,function(msg){
+                console.log("yo");
                 self.setState({
-                    buttonValue : "Accept Invitation"
+                    buttonValue : "Accept Invitation",
+                    buttonClass:"btn btn-danger"
                 });
             });
         }
@@ -52,7 +44,7 @@
             var teams = this.props.tms;
             var html=[];
             return (
-                <table><tbody>{teams.map(function(team){
+                <table className='table table-striped'><tbody>{teams.map(function(team){
                 return <TeamRow key={team.id} row={team}/>;
                 })
                 }</tbody></table>
@@ -69,6 +61,8 @@
         for(var key in teamList){
             if(key!=team._id)
                 teams.push(teamList[key]);
+            else{
+            }
         }
         if(teams!=null){
             React.render(
@@ -80,5 +74,5 @@
 
 
 </script>
-</body>
-</html>
+{{/content}}
+{{/layout}}
