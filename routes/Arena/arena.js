@@ -47,5 +47,10 @@ router.get('/',function(req,res){
             });
 
     }
-    checkTeamMatchStatus(sess.team._id,callback);
+    if(sess.team)
+        checkTeamMatchStatus(sess.team._id,callback);
+    else{
+         req.session.loginRedirect = '/Arena'; 
+         res.redirect('/login');
+    }
 });

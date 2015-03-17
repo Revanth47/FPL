@@ -12,7 +12,7 @@ var match = require('./routes/Match/match');
 var selectPlayers = require('./routes/Match/selectPlayers');
 var admin = require('./routes/admin');
 var market = require('./routes/Market/marketPlace');
-var setSession = require('./routes/setSession');
+var login = require('./routes/login');
 var arena = require('./routes/Arena/arena');
 
 var app = express();
@@ -40,7 +40,7 @@ app.use('/Match/',match);
 app.use('/admin',admin);
 app.use('/Arena',arena);
 app.use('/Market',market);
-app.use('/setSession',setSession);
+app.use('/login',login);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

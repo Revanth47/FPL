@@ -9,7 +9,8 @@ router.get('/',function(req,res){
     var sess = req.session;
     var teamInSession = sess.team;
     if(teamInSession == null){
-        res.send("No Team Selected").end();
+        req.session.loginRedirect = '/Market';
+        res.redirect('/login');
         return;
     }
 

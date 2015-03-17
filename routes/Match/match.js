@@ -76,8 +76,10 @@ router.post('/', function(req, res) {
 });
 
 router.get('/',function(req,res){
-    console.log(req.session.match);
-    console.log(req.session.match&&req.session.match.winner==null);
+    if(!req.session.team){
+        req.session.loginRedirect = "/Match";
+        res.redirect('/login');
+    }
     if(req.session.match&&req.session.match.winner==null){
            var matchId = req.session.match._id;
            models.Match.findOne({_id : matchId},function(err,data){

@@ -19,7 +19,8 @@ router.get('/',function(req,res){
             console.log(sess.team);
             teamInSession=sess.team;
             if(teamInSession == null){
-                res.send("No Team Selected").end();
+                req.session.loginRedirect = "/Match/selectPlayers"
+                res.redirect('/login');
                 return;
             }
             models.Match.findOne({

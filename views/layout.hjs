@@ -9,7 +9,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/javascripts/jquery.min.js"></script>
     <script src="/javascripts/jquery.tablesorter.min.js"></script>
-    <script src="javascripts/jquery.tablesorter.widgets.min.js"></script>
+    <script src="/javascripts/jquery.tablesorter.widgets.min.js"></script>
     <script src="/javascripts/jquery.tablednd.0.7.min.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="/javascripts/JSXTransformer.js"></script>
