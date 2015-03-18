@@ -15,7 +15,7 @@
     <script src="/javascripts/JSXTransformer.js"></script>
     <script src="/toast/simply-toast.min.js"></script>
  </head> 
-<body> 
+ <body> 
 <nav class="navbar navbar-inverse navbar-fixed-top">
 <a class="navbar-brand" href="#">Fantasy Premier League</a>
 <ul class="nav navbar-nav">

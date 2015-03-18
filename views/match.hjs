@@ -33,7 +33,7 @@
                     alert(text+"Match is over.","danger"); 
                     var form = document.createElement("form");
                     form.setAttribute("method", "POST");
-                    form.setAttribute("action","http://localhost:9000/Match/");
+                    form.setAttribute("action","/Match/");
                     document.body.appendChild(form);
                     form.submit();
                     break;

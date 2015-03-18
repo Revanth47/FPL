@@ -1,12 +1,13 @@
 {{<layout}}
 {{$content}}
+<br><br>
     <span class="label label-primary" style="float:right">Players Selected: <span id="playerCount">0</span></span>
    <center><h2 id="matchId">{{team1}} vs {{team2}}</h2></center>
-   <div class="panel panel-primary"style="position:absolute;left:10px" >
+   <div class="panel panel-primary"style="position:absolute;left:10px;height:70%;overflow-y:auto;overflow-x:hidden;" >
     <div class="panel-heading">
     <h1 class="panel-title">Squad</h1>
     </div>
-  <div id="unSelectedList" class="panel-body">
+  <div id="unSelectedList" class="panel-body" style="padding-right:10px">
    {{#list}}
    <h6><button type="button" class="btn btn-info" id = "{{_id}}">
    {{name}} {{battingSkill}} {{bowlingSkill}} {{confidence}}
@@ -14,14 +15,15 @@
    {{/list}}
     </div>
     </div>
-    <div class="panel panel-primary"style="position:absolute;right:10px" >
+    <div class="panel panel-primary"style="position:absolute;right:10px;height:70%;overflow-y:auto;overflow-x:hidden;" >
     <div class="panel-heading">
     <h1 class="panel-title">Playing 11</h1>
     </div>
-     <div id="selectedList" class="panel-body">
+     <div id="selectedList" class="panel-body"style="padding-right:10px">
     </div>
     </div>
     <center><button type="button" class="btn btn-danger" onclick="submitList()">Submit</button>
+<br><br>
 <script>
 var selectedCount = 0;
 window.onload = function(){

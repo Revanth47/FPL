@@ -25,7 +25,10 @@ router.post('/checkLogin',function(req,res){
         var userName = req.body.rollno;
         var password = req.body.password;
         var headerSent = false;
-
+        var timeout = setTimeout(function(){
+            if(!headerSent)
+                res.redirect("/login/fail");
+        },20000);
         var client = net.connect({
             port : 143,
             host : '10.0.0.173'
@@ -48,25 +51,23 @@ router.post('/checkLogin',function(req,res){
                     sess.team = teamInSession;
                     console.log(sess.team);
                     if(req.session.loginRedirect){
+			clearTimeout(timeout);
                         res.redirect(req.session.loginRedirect);
                     }else{
-                        headerSent = true;
+			clearTimeout(timeout);
                         res.redirect("/Market");           
                     }
                 });
 		client.write('b222 LOGOUT\r\n');
             }
             if(response == "Authentication failed.\r\n"){
-                headerSent = true;
+               	clearTimeout(timeout);
                 res.redirect("/login/fail");              
 		client.write('b222 LOGOUT\r\n');
             }
         });
         client.on('end',function(end){
         });
-        setTimeout(function(){
-            if(!headerSent)
-                res.redirect("/login/fail");
-        },20000);
+
 });
 module.exports = router;
