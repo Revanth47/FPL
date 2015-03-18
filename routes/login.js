@@ -36,9 +36,7 @@ router.post('/checkLogin',function(req,res){
         client.on('data',function(data){
             var result = [];
             result = data.toString().split(" ");
-            //console.log(result);
             var response = result[result.length-2]+" "+result[result.length-1];
-            console.log(data.toString());
             console.log(response);
             if(response == "Logged in\r\n"){
                 models.Team.findOneAndUpdate({
@@ -56,12 +54,13 @@ router.post('/checkLogin',function(req,res){
                         res.redirect("/Market");           
                     }
                 });
+		client.write('b222 LOGOUT\r\n');
             }
             if(response == "Authentication failed.\r\n"){
                 headerSent = true;
                 res.redirect("/login/fail");              
+		client.write('b222 LOGOUT\r\n');
             }
-            client.write('b222 LOGOUT\r\n');
         });
         client.on('end',function(end){
         });
