@@ -20,20 +20,37 @@ function checkTeamMatchStatus(teamId,callback){
             console.log(err);
             callback(true);
         }
-        else if(match&&match.winner==null)
+        else if(match&&match.winner==null){
             callback(false,match._id);
-        else
-            callback(false,null);
+	}
+        else{
+		models.Player.find({
+			team : teamId
+		},function(err,players){
+		 	if(err){
+				console.log(err);
+				callback(true);
+				return;
+			}
+			if(players.length<11){
+				callback(false,null,true);
+			}
+		};
+	}
 
     });
 }
 router.get('/',function(req,res){
     var sess = req.session;
-    var callback=function(err,matchId){
+    var callback=function(err,matchId,playerRestriction){
         if(err){
             res.send("Error").end();
             return;
         }
+	if(playerRestriction){
+		res.send("You dont have 11 players.<a href='/Market'>Click here to buy them</a>").end();
+		return;
+	}
         if(matchId!=null){
             res.redirect('/Match');
             return;

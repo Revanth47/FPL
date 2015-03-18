@@ -1,6 +1,7 @@
 {{<layout}}
 {{$content}}
     <h1><span class="page-header">Arena</span></h1>
+    <span style="color:#959595;font-size:12px;font-weight:700">Wait here to see online players.</span>
     <div id="teamList" style="margin-left:10px;display:inline-block">
     </div>
 
