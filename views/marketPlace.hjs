@@ -36,8 +36,7 @@ function post(path, params) {
     form.submit();
 }
 
-function buyPlayer(player,cost){
-
+function buyPlayer(player,cost,node){
         if(parseInt(cost)>parseInt(team["cash"])){
             $.simplyToast("Not enough cash","danger");
             return;
@@ -46,14 +45,25 @@ function buyPlayer(player,cost){
             header:"buyPlayer",
             id:player
         }
-    post('/Market',postObject);
+        node.style.display = "hidden";
+        $.post('Market/ajax',postObject,function(result){
+            result = JSON.parse(result);
+            console.log(result);
+            if(result.res){
+                node.parentNode.parentNode.parentNode.removeChild(node.parentNode.parentNode);
+            }else{
+                node.style.display = "inline-block";
+            }
+            $("#teamCash").html(result.cash);
+            team.cash = result.cash;
+        });
 }
 function showPlayers(){
     $.post('/Market/ajax',{
         header:"getPlayer"
     },function(result){
         var str =""
-        result = JSON.parse(result);
+        var result = JSON.parse(result);
         for(var i=0;i<result.length;i++){
             str = str + parseInt(i+1) + ". " +result[i]["name"] + "<br>";
         }
@@ -61,6 +71,12 @@ function showPlayers(){
         $("#modalButton").click();
 //        $.simplyToast(str,"info");
     });
+}
+function clearPlayers(){
+    var postObject = {
+        header:"clearAllPlayers"
+    }
+    post('/Market',postObject);
 }
 var team = {{{teamjs}}};
 var playersArray = {{{playersjs}}};
@@ -70,8 +86,9 @@ var playersArray = {{{playersjs}}};
     <h1><span class="page-header">Market Place</span></h1>
     <div id="teams" style="float:left">
 <h3>
-   <span class="label label-warning" style="margin-left:5px">{{team.cash}}</span> 
+   <span id="teamCash" class="label label-warning" style="margin-left:5px">{{team.cash}}</span> 
    <button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers();">Show Players</button>
+   <button type="button" class="btn btn-warning" onclick="clearPlayers();">Clear Players</button>
 </h3>
     </div>     
     <br><br>
@@ -88,7 +105,7 @@ var playersArray = {{{playersjs}}};
     <td>{{bowlingSkill}}</td>
     <td>{{confidence}}</td>
     <td>{{cost}}</td>
-    <td><button type="button" class="btn btn-success" onclick="buyPlayer('{{_id}}','{{cost}}');">Buy Player</button></td></tr>
+    <td><button type="button" class="btn btn-success" onclick="buyPlayer('{{_id}}','{{cost}}',this);">Buy Player</button></td></tr>
 {{/players}}
 </tbody>
     </table>

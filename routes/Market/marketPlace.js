@@ -69,17 +69,12 @@ router.post('/',function(req,res){
          });
    }
     switch(req.body.header){
-        case "buyPlayer":
-            if(req.body.team=="-1"){
-                req.session.auctionCount++;
-                redirect(false);
-                return;
-            }
+
+        case "clearAllPlayers":
             var object = {
-                "team" : teamInSession,
-                "player" : req.body.id
+                "team" : teamInSession
             }
-            buyPlayer(object,redirect);
+            clearPlayers(object,redirect);
             break;
         default:
             break;
@@ -100,10 +95,51 @@ router.post('/ajax',function(req,res){
                 res.send(JSON.stringify(data)).end();
             });
             break;
+        case "buyPlayer":
+            var object = {
+                "team" : teamInSession,
+                "player" : req.body.id
+            }
+            buyPlayer(object,function(result){
+                models.Team.findOne({
+                    "_id":teamInSession["_id"]
+                },function(err,teamInSession){
+                    req.session.team = teamInSession;
+                    if(err){
+                    res.send("Error").end();
+                    return;
+                    }
+                    var object = {
+                        res : result,
+                        cash : teamInSession["cash"]
+                    };
+                     res.send(JSON.stringify(object)).end();
+                    });
+            });
+            break;
         default:
             break;
     }
 });
+function clearPlayers(object,callback){
+    models.Player.remove({
+        "team" : object.team._id,
+    },function(err,players){
+        if(err)
+            console.log(err);
+        models.Team.findOneAndUpdate({
+            "_id" : object.team._id
+        },{
+            $set : {
+                "cash" : 13000
+            }
+        },function(err,team){
+            if(err)
+                console.log(err);
+                callback(false);
+        });
+    });
+}
 function buyPlayer(object,callback){
     var player_id = object.player;
     models.Team.findOne({
@@ -111,7 +147,7 @@ function buyPlayer(object,callback){
     },function(err,team){
         if(err){
             console.log(err);
-            callback(true);
+            callback(false);
             return;
         }
             models.DefaultPlayer.findOne({
@@ -123,16 +159,16 @@ function buyPlayer(object,callback){
                 },function(err,shouldBeNull){
                     if(err){
                         console.log(err);
-                        callback(true);
+                        callback(false);
                         return;
                     }
                     if(shouldBeNull!=null){
-                        callback(false);
+                        callback(true);
                         return;
                     }
                     if(team.cash<player.cost){
                         console.log("not enough cash");
-                        callback(true);
+                        callback(false);
                         return;
                     }
                     var PlayerInsert = new models.Player({
@@ -148,17 +184,17 @@ function buyPlayer(object,callback){
                     PlayerInsert.save(function(err,data){
                         if(err){
                             console.log(err);
-                            callback(true);
+                            callback(false);
                             return;
                         }
                         team.cash = parseInt(team.cash - player["cost"]);
                         team.save(function(err){
                             if(err){
                                 console.log(err);
-                                callback(true);
+                                callback(false);
                                 return;
                             }
-                            callback(false);
+                            callback(true);
                         });
                  });
             });

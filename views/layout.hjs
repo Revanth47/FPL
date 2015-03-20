@@ -17,7 +17,7 @@
  </head> 
  <body> 
 <nav class="navbar navbar-inverse navbar-fixed-top">
-<a class="navbar-brand" href="#">Fantasy Premier League</a>
+<a class="navbar-brand" href="#">Fantasy Premier League Beta</a>
 <ul class="nav navbar-nav">
 <li><a href="/Arena">Arena</a></li>
 <li><a href="/Market">Market</a></li>
@@ -31,7 +31,7 @@
 <img alt="brand" src="/images/delta.png" style="height:50px;margin-left:10px;float:left"/>
 <p style="float:right">PCK IS BATMAN</p>
 <center>
-<a style="" href="delta.nitt.edu">Created And Maintained By <br>Delta Force</a>
+<a style="color:#9d9d9d" href="delta.nitt.edu">Created And Maintained By <br>Delta Force</a>
 </center>
 </nav>
 </body>

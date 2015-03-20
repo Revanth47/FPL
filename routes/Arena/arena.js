@@ -24,7 +24,7 @@ function checkTeamMatchStatus(teamId,callback){
             callback(false,match._id);
 	}
         else{
-		models.Player.find({
+                models.Player.find({
 			team : teamId
 		},function(err,players){
 		 	if(err){
@@ -34,10 +34,11 @@ function checkTeamMatchStatus(teamId,callback){
 			}
 			if(players.length<11){
 				callback(false,null,true);
-			}
-		};
+			}else{
+                            callback(false,null);
+                        }
+		});
 	}
-
     });
 }
 router.get('/',function(req,res){
