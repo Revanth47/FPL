@@ -4,6 +4,7 @@ var fs = require('fs');
 var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
 var session = require('cookie-session');
 var async = require('async');
+var globalFunctions = require('../globalFunctions');
 
 router.get('/',function(req,res){
     var sess = req.session;
@@ -13,7 +14,15 @@ router.get('/',function(req,res){
         res.redirect('/login');
         return;
     }
-
+var callback = function(err,matchId){
+    if(err){
+	res.send("error").end();
+	return;
+    }
+    if(matchId!=null){
+	res.redirect('/Match');
+	return;
+    }
     models.Player.find({
         team:teamInSession._id
     })
@@ -53,6 +62,8 @@ router.get('/',function(req,res){
                 });         
         });
     });
+}
+globalFunctions.checkTeamMatchStatus(teamInSession._id,callback);
 });
 router.post('/',function(req,res){
     var teamInSession = req.session.team;

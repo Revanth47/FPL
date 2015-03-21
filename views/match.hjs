@@ -166,6 +166,7 @@
             buttons[0].disabled = true;
             buttons[1].disabled = true;
         }
+
     </script>
   <h5 id="misc"></h5>
   <div id="batting" style="float:left">

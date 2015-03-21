@@ -140,7 +140,28 @@ module.exports = {
         getMatchDetails(req.session.match._id,callback);
 
     });
-
+    teamSockets[matchId].timeout = null;
+    teamSockets[matchId].timeoutCall = null;
+    socket.on("setTimeOut",function(data){
+	if(teamSockets[matchId].timeout==null){
+		teamSockets[matchId].timeoutCall = req.session.team;
+		teamSockets[matchId].team1.emit("startTimeout","yo");
+		teamSockets[matchId].team2.emit("startTimeout","yo");
+		teamSockets[matchId].timeout = setTimeout(function(){
+			teamSockets[matchId].team1.emit("timeout","yo");
+			teamSockets[matchId].team2.emit("timeout","yo");
+		},32000);
+	}
+    });
+    socket.on("unsetTimeOut",function(data){
+	if(teamSockets[matchId].timeout!=null){
+		clearTimeout(teamSockets[matchId].timeout);
+		teamSockets[matchId].timeout = null;
+		teamSockets[matchId].timeoutCall = null;
+		teamSockets[matchId].team1.emit("clearTimeout","yo");
+		teamSockets[matchId].team2.emit("clearTimeout","yo");
+	}
+    });
     //----------------------------------------------------
     socket.on("setStyle",function(data){
       var callback = function(match){
