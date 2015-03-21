@@ -23,6 +23,10 @@
     </div>
     </div>
     <center><button type="button" class="btn btn-danger" onclick="submitList()">Submit</button>
+     <br><br>
+    <span style="color:#959595;font-size:12px;font-weight:700">The first two players you choose will be your opening pair.The last player you choose will be your opening bowler.</span><br>
+    <span style="color:#959595;font-size:12px;font-weight:700">Inside the match you can click and drag your player to change the batting order.</span>
+    </center>
 <br><br>
 <script>
 var selectedCount = 0;
