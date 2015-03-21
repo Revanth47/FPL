@@ -48,7 +48,6 @@ function buyPlayer(player,cost,node){
         node.style.display = "hidden";
         $.post('Market/ajax',postObject,function(result){
             result = JSON.parse(result);
-            console.log(result);
             if(result.res){
                 node.parentNode.parentNode.parentNode.removeChild(node.parentNode.parentNode);
             }else{
@@ -64,8 +63,9 @@ function showPlayers(){
     },function(result){
         var str =""
         var result = JSON.parse(result);
+        console.log(result);
         for(var i=0;i<result.length;i++){
-            str = str + parseInt(i+1) + ". " +result[i]["name"] + "<br>";
+            str = str + parseInt(i+1) + ". " +result[i]["name"] +" "+result[i]["battingSkill"]+" "+result[i]["bowlingSkill"]+" "+result[i]["confidence"] +"<br>";
         }
         document.getElementById("modalBody").innerHTML=str;
         $("#modalButton").click();
