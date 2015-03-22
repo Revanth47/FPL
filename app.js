@@ -42,6 +42,11 @@ app.use('/Arena',arena);
 app.use('/Market',market);
 app.use('/login',login);
 app.use('/',market);
+
+app.get('/logout',function(req,res){
+   req.session = null;
+   res.redirect('/login');
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

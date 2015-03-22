@@ -23,7 +23,10 @@
 <li><a href="/Market">Market</a></li>
 <li><a href="/Match">Match</a></li>
 </ul>
-<p class="navbar-text navbar-right" style="margin-right:15px">{{LayoutTeam.name}}</p>
+<ul class="nav navbar-nav navbar-right" style="margin-right:15px">
+<li><a href="/logout">Logout</a></li>
+</ul>
+<p class="navbar-text navbar-right">{{LayoutTeam.name}}</p>
 </nav>
 <br><br>
 {{$content}} {{/content}}
