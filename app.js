@@ -26,7 +26,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(multer()); // for parsing multipart/form-data

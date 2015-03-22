@@ -79,6 +79,7 @@ router.get('/',function(req,res){
     if(!req.session.team){
         req.session.loginRedirect = "/Match";
         res.redirect('/login');
+	return;
     }
     if(req.session.match&&req.session.match.winner==null){
            var matchId = req.session.match._id;
