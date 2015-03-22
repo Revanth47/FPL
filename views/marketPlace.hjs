@@ -78,6 +78,12 @@ function clearPlayers(){
     }
     post('/Market',postObject);
 }
+function randomPlayers(){
+    var postObject = {
+        header:"randomizeTeam"
+    }
+    post('/Market',postObject);
+}
 var team = {{{teamjs}}};
 var playersArray = {{{playersjs}}};
     </script>
@@ -89,6 +95,7 @@ var playersArray = {{{playersjs}}};
    <span id="teamCash" class="label label-warning" style="margin-left:5px">{{team.cash}}</span> 
    <button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers();">Show Players</button>
    <button type="button" class="btn btn-warning" onclick="clearPlayers();">Clear Players</button>
+   <button type="button" class="btn btn-primary" onclick="randomPlayers();">Randomize Team</button>
 </h3>
     </div>     
     <br><br>

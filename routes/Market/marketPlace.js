@@ -87,6 +87,15 @@ router.post('/',function(req,res){
             }
             clearPlayers(object,redirect);
             break;
+        case "randomizeTeam":
+            var object = {
+                "team" : teamInSession
+            }
+            var callback = function(){
+                randomizeTeam(object,redirect);
+            }
+            clearPlayers(object,callback);
+            break;
         default:
             break;
     }
@@ -132,6 +141,65 @@ router.post('/ajax',function(req,res){
             break;
     }
 });
+function randomizeTeam(object,callback){
+      models.DefaultPlayer.find({},function(err,players){
+          if(err){
+              console.log(err);
+              callback(false);
+              return;
+          }
+
+              var cash = 13000;
+              var playerList = [];
+              while(playerList.length<11){
+                  var random = Math.floor(Math.random()*players.length);
+                  if(players[random].cost<=cash){
+                        cash -= players[random].cost;
+                        playerList.push(players[random]);
+                  }else{
+                     var popRandom = Math.floor(Math.random()*playerList.length);
+                     for(var k=0;k<popRandom;k++){
+                        cash+=parseInt(playerList.pop()["cost"]);
+                      }
+                  }
+                  if(playerList.length==11){
+                      var avg_batting =0;
+                      var avg_bowling =0;
+                      for(var l=0;l<11;l++){
+                          avg_batting += parseInt(playerList[l]["battingSkill"]);
+                          avg_bowling += parseInt(playerList[l]["battingSkill"]);
+                      }
+                      if(avg_batting/11>30&&avg_bowling/11>30){
+                            var nested_callback= function(playerList){
+                                if(playerList.length == 0){
+                                    callback(true);
+                                    return;
+                                };
+                                var player = playerList.pop();
+                                var object = {
+                                    "team" : teamInSession,
+                                    "player" : player._id
+                                };
+                                var nest = function(noError){
+                                    if(noError){
+                                        nested_callback(playerList);
+                                    }
+                                }
+                                buyPlayer(object,nest);
+                                return;
+                           };
+                           nested_callback(playerList);
+                           break;
+                      }else{
+                         var popRandom = Math.floor(Math.random()*playerList.length);
+                         for(var k=0;k<popRandom;k++){
+                            cash+=parseInt(playerList.pop()["cost"]);
+                          }                            
+                      }
+                  }
+              }
+        });
+}
 function clearPlayers(object,callback){
     models.Player.remove({
         "team" : object.team._id,
@@ -147,6 +215,7 @@ function clearPlayers(object,callback){
         },function(err,team){
             if(err)
                 console.log(err);
+                teamInSession = team;
                 callback(false);
         });
     });
