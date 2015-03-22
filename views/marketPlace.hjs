@@ -9,7 +9,7 @@
     });
     $(function(){
 
-        $('table').tablesorter({
+        $('#unsoldPlayers').tablesorter({
 
         });
     });
@@ -48,7 +48,11 @@ function buyPlayer(player,cost,node){
         node.style.display = "hidden";
         $.post('Market/ajax',postObject,function(result){
             result = JSON.parse(result);
+            var boughtPlayer;
             if(result.res){
+                boughtPlayer = node.parentNode.parentNode;
+                boughtPlayer.removeChild(node.parentNode);
+                document.getElementById("boughtTable").appendChild(boughtPlayer);
                 node.parentNode.parentNode.parentNode.removeChild(node.parentNode.parentNode);
             }else{
                 node.style.display = "inline-block";
@@ -57,21 +61,7 @@ function buyPlayer(player,cost,node){
             team.cash = result.cash;
         });
 }
-function showPlayers(){
-    $.post('/Market/ajax',{
-        header:"getPlayer"
-    },function(result){
-        var str =""
-        var result = JSON.parse(result);
-        console.log(result);
-        for(var i=0;i<result.length;i++){
-            str = str + parseInt(i+1) + ". " +result[i]["name"] +" "+result[i]["battingSkill"]+" "+result[i]["bowlingSkill"]+" "+result[i]["confidence"] +"<br>";
-        }
-        document.getElementById("modalBody").innerHTML=str;
-        $("#modalButton").click();
-//        $.simplyToast(str,"info");
-    });
-}
+
 function clearPlayers(){
     var postObject = {
         header:"clearAllPlayers"
@@ -84,6 +74,23 @@ function randomPlayers(){
     }
     post('/Market',postObject);
 }
+var initialScroll = 0;
+var finalScroll = 0;
+var scrollFlag = true;
+setInterval(function(){
+    if(scrollFlag){
+        finalScroll = window.scrollY-50;
+        var dy = (finalScroll - initialScroll)*0.06;
+        initialScroll += dy;
+        $("#boughtPlayers").css("margin-top",initialScroll+"px");
+    }
+},1000/60);
+$(window).scroll(function(){
+    scrollFlag = false;
+    setTimeout(function(){
+        scrollFlag = true;
+    },250);
+});
 var team = {{{teamjs}}};
 var playersArray = {{{playersjs}}};
     </script>
@@ -93,15 +100,31 @@ var playersArray = {{{playersjs}}};
     <div id="teams" style="float:left">
 <h3>
    <span id="teamCash" class="label label-warning" style="margin-left:5px">{{team.cash}}</span> 
-   <button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers();">Show Players</button>
    <button type="button" class="btn btn-warning" onclick="clearPlayers();">Clear Players</button>
    <button type="button" class="btn btn-primary" onclick="randomPlayers();">Randomize Team</button>
 </h3>
     </div>     
     <br><br>
+    <div id="boughtPlayers" style="height:400px;overflow-y:auto;overflow-x:hidden;float:right;margin-top:20px;margin-right:20px;" class="table-responsive">
+        <table class="table table-striped" style="display:inline-block">
+        <thead>
+        <tr><th>Name</th><th>Batting Skill</th><th>Bowling Skill</th><th>Confidence</th><th>Cost</th></tr>
+        </thead>
+        <tbody id="boughtTable">
+        {{#boughtPlayers}}
+            <tr><td>{{name}}</td>
+            <td>{{battingSkill}}</td>
+            <td>{{bowlingSkill}}</td>
+            <td>{{confidence}}</td>
+            <td>{{cost}}</td>
+        {{/boughtPlayers}}
+        </tbody>
+        </table>
+    </div>
+    
     <div id="playerDetails" style="margin-top:50px;margin-left:10px" class="table-responsive">
     <span style="color:#959595;font-size:12px;font-weight:700">Sort multiple columns simultaneously by holding down the shift key and clicking a second, third or even fourth column header!</span>
-    <table class="table table-striped tablesorter" style="display:inline-block">
+    <table id="unsoldPlayers" class="table table-striped tablesorter" style="display:inline-block">
     <thead>
     <tr><th>Name</th><th>Batting Skill</th><th>Bowling Skill</th><th>Confidence</th><th>Cost</th></tr>
     </thead>
@@ -117,6 +140,7 @@ var playersArray = {{{playersjs}}};
 </tbody>
     </table>
     </div>
+
 <br>
 <button type="button" id="modalButton" style="visibility:hidden" data-toggle="modal" data-target=".bs-example-modal-sm">Small modal</button>
 

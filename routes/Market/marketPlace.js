@@ -26,15 +26,15 @@ var callback = function(err,matchId){
     models.Player.find({
         team:teamInSession._id
     })
-    .exec(function(err,data){
+    .exec(function(err,boughtPlayers){
         if(err){
             console.log(err);
             res.send("Error").end();
             return;
         }
         var tempArray = Array();
-        for(var i=0;i<data.length;i++)
-            tempArray[i] = data[i].refer;
+        for(var i=0;i<boughtPlayers.length;i++)
+            tempArray[i] = boughtPlayers[i].refer;
         models.DefaultPlayer.find({
             "_id":{
                 $nin : tempArray
@@ -55,6 +55,7 @@ var callback = function(err,matchId){
                     LayoutTeam : req.session.team,
                     teamjs:JSON.stringify(teamInSession),
                     players:players,
+                    boughtPlayers : boughtPlayers,
                     playersjs:JSON.stringify(players),
                     partials:{
                         layout : 'layout'
