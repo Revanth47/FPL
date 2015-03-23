@@ -1,18 +1,17 @@
 {{<layout}}
 {{$content}}
 <div id="fb-root"></div>
-<script>
-        (function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s); js.id = id;
-        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=559360157432985&version=v2.0";
-        fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=508563515902257&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 </script>
 <center>
 <h3>{{result}}</h3>
-<div class="fb-share-button" data-href="http://ppl.pragyan.org" data-layout="button_count"></div>
+<div class="fb-share-button" data-href="http://ppl.pragyan.org:9000" data-layout="button_count"></div>
 </center>
 {{/content}}
 {{/layout}}
