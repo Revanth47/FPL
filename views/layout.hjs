@@ -24,6 +24,7 @@ content="http://i.imgur.com/LKz3rbZ.jpg" />
 <li><a href="/Arena">Arena</a></li>
 <li><a href="/Market">Market</a></li>
 <li><a href="/Match">Match</a></li>
+<li><a href="/leaderboard">Leaderboard</a></li>
 </ul>
 <ul class="nav navbar-nav navbar-right" style="margin-right:15px">
 <li><a href="/logout">Logout</a></li>

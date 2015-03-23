@@ -14,7 +14,7 @@ var admin = require('./routes/admin');
 var market = require('./routes/Market/marketPlace');
 var login = require('./routes/login');
 var arena = require('./routes/Arena/arena');
-
+var leaderboard = require('./routes/leaderboard');
 var app = express();
 app.use(session({
     secret:'PragyanPremierLeague',
@@ -41,6 +41,7 @@ app.use('/admin',admin);
 app.use('/Arena',arena);
 app.use('/Market',market);
 app.use('/login',login);
+app.use('/leaderboard',leaderboard)
 app.use('/',market);
 
 app.get('/logout',function(req,res){
