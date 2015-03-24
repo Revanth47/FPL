@@ -52,8 +52,11 @@ function buyPlayer(player,cost,node){
             if(result.res){
                 boughtPlayer = node.parentNode.parentNode;
                 boughtPlayer.removeChild(node.parentNode);
-                document.getElementById("boughtTable").appendChild(boughtPlayer);
-                //node.parentNode.parentNode.parentNode.removeChild(node.parentNode.parentNode);
+                boughtPlayer.parentNode.removeChild(boughtPlayer);
+		$("#unsoldPlayers").trigger("update");
+               // var sorting = [[0,0]]; 
+		//$("#unsoldPlayers").trigger("sorton",[sorting]);
+		document.getElementById("boughtTable").appendChild(boughtPlayer);
             }else{
                 node.style.display = "inline-block";
             }

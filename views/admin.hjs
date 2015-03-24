@@ -2,18 +2,24 @@
 <html>
   <head>
     <title>ppl match</title>
+    <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script>
 
     </script>
     </head>
     <body>
-    <div id="displayMatches">
-    <table>
+    <div id="displayMatches" style="display:inline-block">
+    <table class='table table-condensed'>
     <form id="editMatch" action="admin" method="POST">
     <input type="hidden" name="header" value="editMatch" />
     {{#matches}}
-        <tr><td>{{team1.team.name}}</td><td>{{team1.runsScored}}</td><td>{{team1.ballsBowled}}</td>
+        <tr>
+	<td>{{timeOfMatch}}</td>
+	<td>{{team1.team.name}}</td><td>{{team1.runsScored}}</td><td>{{team1.ballsBowled}}</td>
         <td>{{team2.team.name}}</td><td>{{team2.runsScored}}</td><td>{{team2.ballsBowled}}</td>
         <td>{{innings}}</td><td>{{winner}}</td><td>{{superOver}}</td><td><button name ="delete" value="{{_id}}" onclick="document.getElementById('editMatch').submit()">Delete</button></td></tr>
     {{/matches}}
@@ -39,8 +45,8 @@
     <input type="submit" value="submit"/>
     </form>
     <br><br>
-    <div id="displayTeams">
-    <table>
+    <div id="displayTeams" style="display:inline-block">
+    <table class='table table-striped'>
     {{#teams}}
         <tr><td>{{name}}</td><td>{{cash}}</td></tr>
     {{/teams}}
