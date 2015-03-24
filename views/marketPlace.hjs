@@ -53,7 +53,7 @@ function buyPlayer(player,cost,node){
                 boughtPlayer = node.parentNode.parentNode;
                 boughtPlayer.removeChild(node.parentNode);
                 document.getElementById("boughtTable").appendChild(boughtPlayer);
-                node.parentNode.parentNode.parentNode.removeChild(node.parentNode.parentNode);
+                //node.parentNode.parentNode.parentNode.removeChild(node.parentNode.parentNode);
             }else{
                 node.style.display = "inline-block";
             }

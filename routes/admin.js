@@ -70,7 +70,7 @@ router.get('/',auth,function(req,res){
             res.send("check logs");
           return;
       }
-      console.log(results);
+//      console.log(results);
       res.render("admin",{
             teams:results[0],
             matches:results[1]

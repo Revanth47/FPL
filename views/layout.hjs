@@ -1,8 +1,10 @@
 <!DOCTYPE html> 
 <html>
 <head>
-<meta property="og:image"
-content="http://i.imgur.com/LKz3rbZ.jpg" />
+<meta property="og:type"   content="website" /> 
+<meta property="og:image" content="http://i.imgur.com/LKz3rbZ.jpg" />
+<meta property="og:title"  content="Play FPL with me here!!"/> 
+
 <title>Fantasy Premier League</title> 
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
@@ -26,11 +28,18 @@ content="http://i.imgur.com/LKz3rbZ.jpg" />
 <li><a href="/Match">Match</a></li>
 <li><a href="/leaderboard">Leaderboard</a></li>
 </ul>
+
 <ul class="nav navbar-nav navbar-right" style="margin-right:15px">
 <li><a href="/logout">Logout</a></li>
 </ul>
 <p class="navbar-text navbar-right">{{LayoutTeam.name}}</p>
+<div style="margin-top:16px;" class="nav navbar-nav navbar-right">
+	<span style="color:white;">Invite your classmates by sharing</span>
+	<div class="fb-share-button" data-href="http://coolvoltage.github.io/fpl_sharepage" data-layout="button_count"></div>
+</div>
+
 </nav>
+
 <br><br>
 {{$content}} {{/content}}
 <nav class="navbar navbar-inverse navbar-fixed-bottom">
@@ -40,6 +49,16 @@ content="http://i.imgur.com/LKz3rbZ.jpg" />
 <a style="color:#9d9d9d" href="http://delta.nitt.edu" target="_blank">Created And Maintained By <br>Delta Force</a>
 </center>
 </nav>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=1430409920589674&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
 </body>
 </html>
 
