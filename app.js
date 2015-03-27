@@ -44,6 +44,16 @@ app.use('/login',login);
 app.use('/leaderboard',leaderboard)
 app.use('/',market);
 
+app.get('/test',function(req,res){
+res.render('postmatch',{
+                        result:"yolo",
+                        LayoutTeam : req.session.team,
+                        partials : {
+                            layout : 'layout'
+                        }
+			});
+
+});
 app.get('/logout',function(req,res){
    req.session = null;
    res.redirect('/login');

@@ -18,6 +18,7 @@
     <input type="hidden" name="header" value="editMatch" />
     {{#matches}}
         <tr>
+	<td>{{_id}}</td>
 	<td>{{timeOfMatch}}</td>
 	<td>{{team1.team.name}}</td><td>{{team1.runsScored}}</td><td>{{team1.ballsBowled}}</td>
         <td>{{team2.team.name}}</td><td>{{team2.runsScored}}</td><td>{{team2.ballsBowled}}</td>

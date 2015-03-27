@@ -27,7 +27,7 @@ router.get('/',function(req,res){
                 teamResult[teams[results[i]["winner"]["_id"]]]["count"]++;
             }
             if(i==results.length-1){
-                teamResult.sort(function(a,b) {return (a.count < b.count) ? 1 : ((b.info.name < a.info.name) ? -1 : 0);} );
+                teamResult.sort(function(a,b) {return (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0);} );
                 //console.log(JSON.stringify(teamResult));
 		//console.log(JSON.stringify(teams));
                 res.render('leaderboard',{

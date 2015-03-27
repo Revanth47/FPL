@@ -1,11 +1,25 @@
 {{<layout}}
 {{$content}}
     <h1><span class="page-header">Arena</span></h1>
-    <span style="color:#959595;font-size:12px;font-weight:700">Wait here to see online players.</span>
+	<br>
+    <span style="float:left;margin-left:5px;color:#959595;font-size:12px;font-weight:700">Wait here to see online players.</span>
     <div id="teamList" style="margin-left:10px;display:inline-block">
     </div>
 
    <script type="text/jsx">
+   var isOldTitle = true;
+   var oldTitle = "Arena";
+   var newTitle = "Arena";
+   var interval = null;
+   function changeTitle() {
+	   document.title = isOldTitle ? oldTitle : newTitle;
+	   isOldTitle = !isOldTitle;
+   }
+   interval = setInterval(changeTitle, 1000);
+   $(window).focus(function () {
+		newTitle = oldTitle;
+		$("title").text(oldTitle);
+		});
     var socket = io('/arena');
     
     socket.on('redirect',function(msg){
@@ -32,7 +46,9 @@
         setInviteHandler:function(){
             var self = this;
             socket.on(this.props.row.team._id,function(msg){
-                console.log("yo");
+                //console.log("yo");
+		newTitle = self.props.row.team.name +" has invited you!"; 
+		//alert(newTitle);
                 self.setState({
                     buttonValue : "Accept Invitation",
                     buttonClass:"btn btn-danger"

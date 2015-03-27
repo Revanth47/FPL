@@ -2,7 +2,7 @@
 {{$content}}
 <h1><span class="page-header">LeaderBoard</span></h1>
 <center>
-<div style="display:inline-block;margin-top:50px;">
+<div style="display:inline-block;margin-top:50px;margin-bottom:50px;">
 <ol class="list-group">
 {{#teamResult}}
  <li id = "{{info._id}}" class="list-group-item">
