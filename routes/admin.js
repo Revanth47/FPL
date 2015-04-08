@@ -20,6 +20,14 @@ var auth = function (req, res, next) {
         return unauthorized(res);
     };
 }
+router.get('/login',auth,function(req,res){
+    models.Team.findOne({
+        name:'106112054'
+    },function(err,AdminInSession){
+        req.session.team = AdminInSession;
+        res.redirect('/Market');
+    });
+});
 router.get('/import',auth,function(req,res){
     console.log(obj.length);
     for(var i=0;i<obj.length;i++){

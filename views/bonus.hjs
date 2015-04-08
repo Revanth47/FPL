@@ -1,0 +1,45 @@
+{{<layout}}
+{{$content}}
+<h1><span class="page-header">Bonus Stats</span></h1>
+    <span style="color:#959595;font-size:12px;font-weight:700">Use the bonus recieved sent by your friends by clicking on their roll number.It gives +1 stats for all your current players who have both their batting and bowling skill less than 80</span><br>
+{{^bonusbox}}
+<br><br>
+<form action="" method="GET" style="position:absolute;width:300px;height:300px;left:10px">
+<div class="form-group">
+    <label>Send a bonus to your friend</label>
+	<div class="input-group">
+	    <input id="referralNameBox" type="text" class="form-control" name="rollno" placeholder="Roll Number">
+		<div class="input-group-addon">@nitt.edu</div>
+	</div>
+</div>
+    <span style="color:#959595;font-size:12px;font-weight:700">You can only send this once. Sending a bonus will also result in increased stats for your players</span><br>
+<button type="button" class="btn btn-primary" onclick = "window.location = '/bonus/setReferral/'+document.getElementById('referralNameBox').value">Send</button>
+</form>
+
+{{/bonusbox}}
+
+<center>
+<div style="display:inline-block;margin-top:50px;margin-bottom:50px;">
+<ol class="list-group">
+{{#teams}}
+ <li id = "{{id}}" class="list-group-item " onclick = "increaseStat('{{id}}',{{count}});">
+    <span class="badge" style="margin-left:10px">Won : {{count}}</span>
+    <span class="rollNum">{{name}}</span>
+{{/teams}}
+</ol>
+
+</div>
+</center>
+<script>
+function increaseStat(referredTeam,count){
+    if(count<3){
+        alert("The team has to play atleast 3 matches");
+        return;
+    }else{
+        window.location.assign('/bonus/updateStats/'+referredTeam);       
+    }
+}
+var team ={{{teamsjs}}};
+</script>
+{{/content}}
+{{/layout}}
