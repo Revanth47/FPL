@@ -27,6 +27,7 @@
 <li><a href="/Market">Market</a></li>
 <li><a href="/Match">Match</a></li>
 <li><a href="/leaderboard">Leaderboard</a></li>
+<li><a href="/bonus">Bonus</a></li>
 </ul>
 
 <ul class="nav navbar-nav navbar-right" style="margin-right:15px">

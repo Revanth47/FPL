@@ -1,7 +1,7 @@
 {{<layout}}
 {{$content}}
 <h1><span class="page-header">Bonus Stats</span></h1>
-    <span style="color:#959595;font-size:12px;font-weight:700">Use the bonus recieved sent by your friends by clicking on their roll number.It gives +1 stats for all your current players who have both their batting and bowling skill less than 80</span><br>
+    <span style="color:#959595;font-size:12px;font-weight:700">Use the bonus sent by your friends by clicking on their roll number below.It gives +1 stats for all your current players who have both their batting and bowling skill less than 80</span><br>
 {{^bonusbox}}
 <br><br>
 <form action="" method="GET" style="position:absolute;width:300px;height:300px;left:10px">
