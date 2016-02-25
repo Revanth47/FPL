@@ -84,9 +84,10 @@ function showPlayers(team){
 var teams = {{{teamsjs}}};
     </script>
     </head>
-    <img src="images/delta.png" style="float:left;margin-left:10px;height:80px;"/>
-    <center><img src="images/pragyan.png" style="height:80px"/></center>
     <body style="background-image:url('images/auctionBack.jpg')">
+    <img src="images/delta.png" style="float:left;margin-left:10px;height:80px;"/>
+    <img src="images/pragyan.png" style="float:right;height:150px"/>
+    <br><br><br>
     <div id="teams" style="margin-left:20px;float:left;margin-top:30px;">
 {{#teams}}
 <h3>
