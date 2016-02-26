@@ -28,7 +28,7 @@ router.get('/',auth,function(req,res){
         team:null
     })
     .sort({
-        name : 1
+        imgSource : 1
     })
     .exec(function(err,players){
         if(err){

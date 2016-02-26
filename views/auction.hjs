@@ -6,6 +6,7 @@
     <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
     <script src="/javascripts/jquery.min.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,700,300italic' rel='stylesheet' type='text/css'>
     <script src="/toast/simply-toast.min.js"></script>
     <script>
     $.extend(true, $.simplyToast.defaultOptions,
@@ -52,8 +53,10 @@ function buyPlayer(team){
     else{
         index = getIndex(team);
         var money = prompt("Please enter the amount for the team : " +teams[index]["name"]);
-        if(money==null)
+        if(money==null || money=="")
             return;
+	if(parseInt(money) > 5000)
+	    return;
         if(parseInt(money)>parseInt(teams[index]["cash"])){
             $.simplyToast("Not enough cash","danger");
             return;
@@ -84,7 +87,7 @@ function showPlayers(team){
 var teams = {{{teamsjs}}};
     </script>
     </head>
-    <body style="background-image:url('images/auctionBack.jpg')">
+    <body style="">
     <img src="images/delta.png" style="float:left;margin-left:10px;height:80px;"/>
     <img src="images/pragyan.png" style="float:right;height:150px"/>
     <br><br><br>
