@@ -4,6 +4,7 @@ var fs = require('fs');
 var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
 var session = require('cookie-session');
 var async = require('async');
+models = require('../models');
 var basicAuth = require('basic-auth');
 var auth = function (req, res, next) {
     function unauthorized(res) {

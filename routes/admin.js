@@ -5,6 +5,8 @@ var obj = JSON.parse(fs.readFileSync('players.json', 'utf8'));
 var session = require('cookie-session');
 var async = require('async');
 var basicAuth = require('basic-auth');
+var models = require('../models');
+
 var auth = function (req, res, next) {
     function unauthorized(res) {
         res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
