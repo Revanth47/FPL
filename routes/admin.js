@@ -33,7 +33,7 @@ router.get('/import',auth,function(req,res){
                     confidence : obj[i]["confidence"],
                     team : null,
                     imgSource : obj[i]["playerId"],
-                    misc : parseInt(obj[i]["cost"]/1000)
+                    cost : parseInt(obj[i]["cost"]/1000)
                 });
                 player.save(function(err,data){
                     if(err){
@@ -83,10 +83,10 @@ router.get('/',auth,function(req,res){
 router.post('/',auth,function(req,res){
 function render(err){
     if(err){
-        res.send("check logs");
+        res.send("check logs").end();
         return;
     }
-    res.redirect('admin');
+    res.redirect('/admin');
 }   
         switch(req.body.header){
             case "createMatch":

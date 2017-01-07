@@ -8,11 +8,12 @@ var playerSchema = new Schema({
     confidence : Number,
     team : {
         type : Schema.Types.ObjectId,
-        ref : 'Team'
-
+        ref : 'Team',
+        default: null
     },
     imgSource : String,
-    misc : String
+    cost : Number,
+    sold : Number
 });
 
 var teamSchema = new Schema({
@@ -30,7 +31,7 @@ var matchSchema = new Schema({
         team: {
             type : Schema.Types.ObjectId,
             ref : 'Team'
-            },
+        },
         playersStats: {
             type:[{
                 player:{
@@ -108,7 +109,7 @@ var matchSchema = new Schema({
             default:0
         }
     },
-   innings:{
+    innings:{
         type:Number,
         default:1
     },
@@ -143,7 +144,7 @@ var matchSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:'Match',
         default:null
-        }
+    }
 });
 
 
