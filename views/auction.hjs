@@ -84,6 +84,15 @@
                     });
             }
             var teams = {{{teamsjs}}};
+            $(document).ready(function(){
+                $('.team').each(function(key,value){
+                    if($(value).data('players')<11) {
+                        $(value).css('background','#ccc');
+                    } else {
+                        $(value).css('background','lime');
+                    }
+                });
+            });
             </script>
         </head>
         <body>
@@ -104,13 +113,14 @@
                 {
                     display: inline-block;
                     vertical-align: middle;
-                    width: 250px;
+                    width: 520px;
+                    margin-left: 10px;
                 }
                 #player-details-container
                 {
                     display: inline-block;
                     vertical-align: top;
-                    width: calc(100% - 270px);
+                    width: calc(100% - 550px);
                 }
                 #teams td span
                 {
@@ -137,12 +147,13 @@
             </div>
             <div class="base-container">
                 <div id="teams">
-                    <table class="table table-hover table-striped" style="text-align: center;">
+                    <table class="table table-hover" style="text-align: center;">
                         <tbody>
                             {{#teams}}
-                            <tr>
+                            <tr class="team" data-players="{{playerCount}}">
                                 <td><span class="label label-default">{{name}}</span></td>
                                 <td><span class="label label-warning">{{cash}}</span></td>
+                                <td><span class="label label-warning">{{playerCount}}</span></td>
                                 <td><button type="button" id="{{_id}}" class="btn btn-success" onclick="buyPlayer(this);">Buy Player</button></td>
                                 <td><button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers(this);">Show Players</button></td>
                             </tr>

@@ -124,6 +124,7 @@ function buyPlayer(object,player,callback){
                 return;
             }
             team.cash = team.cash - bid;
+            team.playerCount++;
             team.save(function(err){
                 if(err){
                     console.log(err);

@@ -18,6 +18,10 @@ var playerSchema = new Schema({
 
 var teamSchema = new Schema({
     name: String,
+    playerCount: {
+        type: Number,
+        default: 0
+    },
     cash: {
         type:Number,
         default:20000
