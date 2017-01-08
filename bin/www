@@ -2,7 +2,7 @@
 var debug = require('debug')('firstApp');
 var app = require('../app');
 var mongoose = require('mongoose');
-var models = require('models');
+var models = require('../models');
 var fs = require('fs');
 var erfArr = JSON.parse(fs.readFileSync('erf.json','utf8'));
 var session = require('cookie-session');
@@ -28,7 +28,6 @@ var nsp2 = io.of('/startGame');
 nsp2.on('connection',function(socket){
        var req = getCookie(socket);
        var matchId = req.session.match._id;
-        
 //associate team with socket altogether with the match
    if(!teamSockets[matchId])
         teamSockets[matchId] = {};

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Select Players</title>
+      <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/toast/simply-toast.min.js"></script>
+ </head>
+  <body>
+  	<script type="text/javascript">
+  	</script>
+  	<style type="text/css">
+  		form
+  		{
+  			margin: 20px;
+  		}
+  		input
+  		{
+  			display: block;
+  		}
+  	</style>
+  	<form id="set-session" method="post" action="/setSession" onsubmit="setSession()">
+  		<label>Choose Team</label>
+  		<select id="team" name="team">
+  			{{#teams}}
+  			<option value="{{name}}">{{name}}</option>
+  			{{/teams}}
+  		</select>
+  		<input type="submit" name="submit" class="button"/>
+  	</form>
+  </body>
+</html>

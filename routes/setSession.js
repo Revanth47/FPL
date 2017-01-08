@@ -22,15 +22,30 @@ var auth = function (req, res, next) {
         return unauthorized(res);
     };
 }
-router.get('/:team',auth,function(req,res){
+
+router.get('/',auth,function(req,res){
+        models.Team.find({
+            playerCount:{$gt:10}
+        },function(err,teams){
+            console.log(teams);
+            res.render('setSession',{
+                teams:teams
+            });
+        });
+});
+
+router.post('/',auth,function(req,res){
         var sess = req.session;
+        console.log(req.body.team);
         models.Team.findOne({
-            name:req.params.team
+            name:req.body.team
         },function(err,teamInSession){
+            if(err){
+                res.send(400).end();
+            }
             sess.team = teamInSession;
             console.log(sess.team);
-//            res.redirect("/Match/selectPlayers");
-            res.send("yolo").end();
+            res.redirect("/Match/selectPlayers");
         });
 });
 module.exports = router;

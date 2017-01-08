@@ -7,11 +7,9 @@ models = require('models');
 mongoose.connect('mongodb://localhost:27017/PPL');
 db = mongoose.connection;
 db.on('error', function (err) {
-
     console.log('connection error', err);
 });
 db.once('open', function () {
-
     console.log('connected.');
 });
 router.get('/',function(req,res){

@@ -10,7 +10,7 @@ var models = require('../models');
 var auth = function (req, res, next) {
     function unauthorized(res) {
         res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
-        return res.send(401);
+        return res.send(401).end();
     };
     var user = basicAuth(req);
     if (!user || !user.name || !user.pass) {
