@@ -11,9 +11,9 @@
     <script>
     $.extend(true, $.simplyToast.defaultOptions,
     {
-        allowDismiss:true,
-        delay:20000,
-        align:"center"
+        allowDismiss: true,
+        delay: 10000,
+        align: "center"
     });
 function post(path, params) {
 
@@ -55,8 +55,10 @@ function buyPlayer(team){
         var money = prompt("Please enter the amount for the team : " +teams[index]["name"]);
         if(money==null || money=="")
             return;
-	if(parseInt(money) > 5000)
-	    return;
+        if(parseInt(money)<parseInt({{player.cost}})){
+            $.simplyToast("Lesser than minimum bid","danger");
+            return;
+        }
         if(parseInt(money)>parseInt(teams[index]["cash"])){
             $.simplyToast("Not enough cash","danger");
             return;
@@ -112,7 +114,7 @@ var teams = {{{teamsjs}}};
     <h4><span class="label label-info">Batting Skill: {{player.battingSkill}}</span></h4>
     <h4><span class="label label-info">Bowling Skill: {{player.bowlingSkill}}</span></h4>
     <h4><span class="label label-info">Confidence: {{player.confidence}}</span></h4>
-    <h4><span class="label label-info">Lowest Bid: {{player.misc}}</span></h4>
+    <h4><span class="label label-info">Lowest Bid: {{player.cost}}</span></h4>
     </div>
     </div>
     <button type="button" id="skipPlayer" class="btn btn-danger" onclick="buyPlayer(-1)">Skip Player</button>
