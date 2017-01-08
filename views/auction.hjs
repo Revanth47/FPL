@@ -1,133 +1,180 @@
 <!doctype html>
 <html>
-  <head>
-    <title>ppl match</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
-    <script src="/javascripts/jquery.min.js"></script>
-    <script src="/bootstrap/js/bootstrap.min.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Lato:300,700,300italic' rel='stylesheet' type='text/css'>
-    <script src="/toast/simply-toast.min.js"></script>
-    <script>
-    $.extend(true, $.simplyToast.defaultOptions,
-    {
-        allowDismiss: true,
-        delay: 10000,
-        align: "center"
-    });
-function post(path, params) {
+    <head>
+        <title>ppl match</title>
+        <link rel='stylesheet' href='/stylesheets/style.css' />
+        <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+        <script src="/javascripts/jquery.min.js"></script>
+        <script src="/bootstrap/js/bootstrap.min.js"></script>
+        <link href='https://fonts.googleapis.com/css?family=Lato:300,700,300italic' rel='stylesheet' type='text/css'>
+        <script src="/toast/simply-toast.min.js"></script>
+        <script>
+        $.extend(true, $.simplyToast.defaultOptions,
+        {
+            allowDismiss: true,
+            delay: 10000,
+            align: "center"
+        });
 
-    var form = document.createElement("form");
-    form.setAttribute("method", "POST");
-    form.setAttribute("action", path);
-
-    for(var key in params) {
-
-        if(params.hasOwnProperty(key)) {
-
-            var hiddenField = document.createElement("input");
-            hiddenField.setAttribute("type", "hidden");
-            hiddenField.setAttribute("name", key);
-            hiddenField.setAttribute("value", params[key]);
-
-            form.appendChild(hiddenField);
+        function post(path, params) {
+            var form = document.createElement("form");
+            form.setAttribute("method", "POST");
+            form.setAttribute("action", path);
+            for(var key in params) {
+                if(params.hasOwnProperty(key)) {
+                    var hiddenField = document.createElement("input");
+                    hiddenField.setAttribute("type", "hidden");
+                    hiddenField.setAttribute("name", key);
+                    hiddenField.setAttribute("value", params[key]);
+                    form.appendChild(hiddenField);
+                }
+            }
+            document.body.appendChild(form);
+            form.submit();
         }
-    }
 
-    document.body.appendChild(form);
-    form.submit();
-}
-function getIndex(team){
-    for(var i=0;i<teams.length;i++){
-        if(team.id==teams[i]._id)
-            return i;
-    }
-}
-function buyPlayer(team){
-    if(team==-1){
-        var postObject = {
-            header:"buyPlayer",
-            team:"-1"
+        function getIndex(team){
+            for(var i=0;i<teams.length;i++){
+                if(team.id==teams[i]._id)
+                    return i;
+            }
         }
-    }
-    else{
-        index = getIndex(team);
-        var money = prompt("Please enter the amount for the team : " +teams[index]["name"]);
-        if(money==null || money=="")
-            return;
-        if(parseInt(money)<parseInt({{player.cost}})){
-            $.simplyToast("Lesser than minimum bid","danger");
-            return;
-        }
-        if(parseInt(money)>parseInt(teams[index]["cash"])){
-            $.simplyToast("Not enough cash","danger");
-            return;
-        }
-        var postObject = {
-            header:"buyPlayer",
-            team:JSON.stringify(teams[index]),
-            money:money
-        }
-    }
-    post('/auction',postObject);
-}
-function showPlayers(team){
-    $.post('auction/ajax',{
-        header:"getPlayer",
-        team:team.id
-    },function(result){
-        var str =""
-        result = JSON.parse(result);
-        for(var i=0;i<result.length;i++){
-            str = str + parseInt(i+1) + ". " +result[i]["name"] + "<br>";
-        }
-        document.getElementById("modalBody").innerHTML=str;
-        $("#modalButton").click();
-//        $.simplyToast(str,"info");
-    });
-}
-var teams = {{{teamsjs}}};
-    </script>
-    </head>
-    <body style="">
-    <img src="images/delta.png" style="float:left;margin-left:10px;height:80px;"/>
-    <img src="images/pragyan.png" style="float:right;height:150px"/>
-    <br><br><br>
-    <div id="teams" style="margin-left:20px;float:left;margin-top:30px;">
-{{#teams}}
-<h3>
-   <span class="label label-default">{{name}}</span>
-   <span class="label label-warning">{{cash}}</span> 
-   <button type="button" id="{{_id}}" class="btn btn-success" onclick="buyPlayer(this);">Buy Player</button>
-   <button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers(this);">Show Players</button>
-</h3>
-{{/teams}}
-    </div>
-    
-    <div id="playerDetails" style="float:right;margin-right:200px;margin-top:50px">
-    <div class="panel panel-primary">
-    <div class="panel-heading">
-    <h1 class="panel-title">{{player.name}}</h1>
-    </div>
-    <div class="panel-body">
-    <img src="/pics/{{player.imgSource}}.jpg" class="img-thumbnail" style="width:200px;height:200px"/>
-    <h4><span class="label label-info">Batting Skill: {{player.battingSkill}}</span></h4>
-    <h4><span class="label label-info">Bowling Skill: {{player.bowlingSkill}}</span></h4>
-    <h4><span class="label label-info">Confidence: {{player.confidence}}</span></h4>
-    <h4><span class="label label-info">Lowest Bid: {{player.cost}}</span></h4>
-    </div>
-    </div>
-    <button type="button" id="skipPlayer" class="btn btn-danger" onclick="buyPlayer(-1)">Skip Player</button>
-    </div>
-<br>
-<button type="button" id="modalButton" style="visibility:hidden" data-toggle="modal" data-target=".bs-example-modal-sm">Small modal</button>
 
-<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-      <div id="modalBody" class="modal-content">
+        function buyPlayer(team){
+            if(team==-1){
+                var postObject = {
+                    header:"buyPlayer",
+                    team:"-1"
+                }
+            } else {
+                index = getIndex(team);
+                var money = prompt("Please enter the amount for the team : " +teams[index]["name"]);
+                if(money==null || money=="")
+                return;
+                if(parseInt(money)<parseInt({{player.cost}})){
+                    $.simplyToast("Lesser than minimum bid","danger");
+                    return;
+                }
+                else if(parseInt(money)>parseInt(teams[index]["cash"])){
+                    $.simplyToast("Not enough cash","danger");
+                    return;
+                }
+                var postObject = {
+                    header:"buyPlayer",
+                    team:JSON.stringify(teams[index]),
+                    money:money
+                }
+            }
+                post('/auction',postObject);
+            }
+
+            function showPlayers(team){
+                $.post('auction/ajax',{
+                    header:"getPlayer",
+                    team:team.id
+                },function(result){
+                    var str =""
+                    result = JSON.parse(result);
+                    for(var i=0;i<result.length;i++){
+                        str = str + parseInt(i+1) + ". " +result[i]["name"] + "<br>";
+                    }
+                    document.getElementById("modalBody").innerHTML=str;
+                    $("#modalButton").click();
+                    //        $.simplyToast(str,"info");
+                    });
+            }
+            var teams = {{{teamsjs}}};
+            </script>
+        </head>
+        <body>
+            <style type="text/css">
+                .logo-container
+                {
+                    display: block;
+                    margin: 10px;
+                }
+                .logo-container > *
+                {
+                    display: inline-block;
+                    vertical-align: middle;
+                    height: 60px;
+                    width: 33%;
+                }
+                #teams
+                {
+                    display: inline-block;
+                    vertical-align: middle;
+                    width: 250px;
+                }
+                #player-details-container
+                {
+                    display: inline-block;
+                    vertical-align: top;
+                    width: calc(100% - 270px);
+                }
+                #teams td span
+                {
+                    display: inline-block;
+                    line-height: inherit;
+                    vertical-align: top;
+                    font-size: 18px;
+                }
+                .base-container
+                {
+                    margin-top: 50px;
+                }
+                #player-details
+                {
+                    max-width: 300px;
+                    margin: auto;
+                    text-align: center;
+                }
+            </style>
+            <div class="logo-container">
+                <div><img src="images/delta.png" style="max-height: 80px" /></div>
+                <div><h1>Pragyan Premier League</h1></div>
+                <div><img src="images/pragyan.svg" style="float:right;max-height: 80px;max-width: 210px"/></div>
+            </div>
+            <div class="base-container">
+                <div id="teams">
+                    <table class="table table-hover table-striped" style="text-align: center;">
+                        <tbody>
+                            {{#teams}}
+                            <tr>
+                                <td><span class="label label-default">{{name}}</span></td>
+                                <td><span class="label label-warning">{{cash}}</span></td>
+                                <td><button type="button" id="{{_id}}" class="btn btn-success" onclick="buyPlayer(this);">Buy Player</button></td>
+                                <td><button type="button" id="{{_id}}" class="btn btn-info" onclick="showPlayers(this);">Show Players</button></td>
+                            </tr>
+                            {{/teams}}
+                        </tbody>
+                    </table>
                 </div>
-                  </div>
-                  </div>
-
-    </body>
-</html>
+            
+                <div id="player-details-container">
+                    <div id="player-details">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h1 class="panel-title">{{player.name}}</h1>
+                            </div>
+                            <div class="panel-body">
+                                <img src="/pics/{{player.imgSource}}.jpg" class="img-thumbnail" style="width:200px;height:200px"/>
+                                <h4><span class="label label-info">Batting Skill: {{player.battingSkill}}</span></h4>
+                                <h4><span class="label label-info">Bowling Skill: {{player.bowlingSkill}}</span></h4>
+                                <h4><span class="label label-info">Confidence: {{player.confidence}}</span></h4>
+                                <h4><span class="label label-info">Lowest Bid: {{player.cost}}</span></h4>
+                            </div>
+                        </div>
+                        <button type="button" id="skipPlayer" class="btn btn-danger" onclick="buyPlayer(-1)">Skip Player</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="modalButton" style="visibility:hidden" data-toggle="modal" data-target=".bs-example-modal-sm">Small modal</button>
+            <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div id="modalBody" class="modal-content">
+                    </div>
+                </div>
+            </div>
+        </body>
+    </html>
