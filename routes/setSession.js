@@ -8,7 +8,7 @@ var basicAuth = require('basic-auth');
 var auth = function (req, res, next) {
     function unauthorized(res) {
         res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
-        return res.send(401);
+        return res.send(401).end();
     };
     var sess = req.session;
     var user = basicAuth(req);

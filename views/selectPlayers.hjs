@@ -31,6 +31,12 @@
     <center><button type="button" class="btn btn-danger" onclick="submitList()">Submit</button>
 </body>
 <script>
+$.extend(true, $.simplyToast.defaultOptions,
+{
+    allowDismiss: true,
+    delay: 10000,
+    align: "center"
+});
 var selectedCount = 0;
 window.onload = function(){
     var child = document.getElementById("unSelectedList").firstChild;
@@ -39,6 +45,11 @@ window.onload = function(){
         child.onclick = getSelected;
 }
 function getSelected(){
+    if(selectedCount>=11){
+
+        $.simplyToast("11 players selected","danger");
+        return;
+    }
     selectedCount++;
     var player = this;
     document.getElementById("unSelectedList").removeChild(player);
