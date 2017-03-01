@@ -6,6 +6,7 @@ var playerSchema = new Schema({
     battingSkill : Number,
     bowlingSkill : Number,
     confidence : Number,
+    aggression : Number,
     team : {
         type : Schema.Types.ObjectId,
         ref : 'Team',
@@ -24,7 +25,7 @@ var teamSchema = new Schema({
     },
     cash: {
         type:Number,
-        default:20000
+        default:1000000
     }
 });
 
