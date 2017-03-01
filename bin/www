@@ -495,6 +495,9 @@ function gameEngine(statusObject){
     // alters skill from -x% to +x%
     var batConfidence = batsman.confidence;
     var ballConfidence = bowler.confidence;
+
+    var batAggression = batsman.aggression;
+    var ballAggression = bowler.aggression;
     //
     //  defensive:
     //          low wicket chance, but low runs
@@ -505,8 +508,8 @@ function gameEngine(statusObject){
     var batStyle = statusObject.batStyle;
     var ballStyle = statusObject.ballStyle;
     // adavantageous skills
-    var finalBatPoints = (batSkill+(batSkill*batConfidence/100))/100;
-    var finalBallPoints = (ballSkill+(ballSkill*ballConfidence/100))/100;
+    var finalBatPoints = (batSkill+(batSkill*batConfidence/200)+(batSkill*batAggression/200))/100;
+    var finalBallPoints = (ballSkill+(ballSkill*ballConfidence/200)+(ballSkill*ballAggression/200))/100;
     // mean computed by Skill with Confidence
     // variance computed by mean with style
     var mean = 0.5+(finalBatPoints-finalBallPoints)/2;
