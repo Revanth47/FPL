@@ -28,11 +28,11 @@ router.get('/import',auth,function(req,res){
             if(obj[i]["name"]!=null){
                 var player = new models.Player({
                     name : obj[i]["name"],
-                    battingSkill : (obj[i]["batting"])*100,
-                    bowlingSkill : (obj[i]["bowling"])*100,
-                    confidence : ((obj[i]["confidence"])*50)-25,
-                    aggression : ((obj[i]["aggression"])*50)-25,
-                    team : obj[i]["country"],
+                    battingSkill : Math.round((obj[i]["batting"])*100),
+                    bowlingSkill : Math.round((obj[i]["bowling"])*100),
+                    confidence : Math.round(((obj[i]["confidence"])*50)-25),
+                    aggression : Math.round(((obj[i]["aggression"])*50)-25),
+                    team : null,
                     imgSource : obj[i]["playerId"],
                     cost : parseInt(obj[i]["cost"])
                 });

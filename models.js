@@ -12,7 +12,7 @@ var playerSchema = new Schema({
         ref : 'Team',
         default: null
     },
-    imgSource : String,
+    imgSource : Number,
     cost : Number,
     sold : Number
 });
